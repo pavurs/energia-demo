@@ -471,12 +471,15 @@ function viewDone(){
 function render(){
   if(!S.logged){$('login').hidden=false;$('shell').hidden=true;$('tabs').hidden=true;$('cartbar').hidden=true;return}
   $('login').hidden=true;$('shell').hidden=false;$('tabs').hidden=false;
-  var v=$('view');
+  var v=$('view'),oldChips=v.querySelector('.chips'),chipsX=oldChips?oldChips.scrollLeft:0;
   if(S.justPlaced)v.innerHTML=viewDone();
   else if(S.tab==='catalog')v.innerHTML=viewCatalog();
   else if(S.tab==='repeat')v.innerHTML=viewRepeat();
   else if(S.tab==='cart')v.innerHTML=viewCart();
   else v.innerHTML=viewOrders();
+  var ch=v.querySelector('.chips');
+  if(ch){ch.scrollLeft=chipsX;var on=ch.querySelector('.chip.on');if(on&&S.chipJump){var l=on.offsetLeft-ch.offsetLeft,r=l+on.offsetWidth;if(l<ch.scrollLeft+16)ch.scrollLeft=l-16;else if(r>ch.scrollLeft+ch.clientWidth-16)ch.scrollLeft=r-ch.clientWidth+16}}
+  S.chipJump=false;
   refreshChrome();
 }
 function go(tab){S.tab=tab;S.openOrder=null;S.justPlaced=null;render();window.scrollTo(0,0)}
@@ -520,7 +523,7 @@ $('view').addEventListener('click',function(e){
   var t=e.target.closest('button');if(!t)return;var ds=t.dataset;
   if(ds.open){openProduct(ds.open);return}
   if(ds.add){var p=BY[ds.add];setQty(ds.add,1);toast(p.name+': 1 '+p.unit+' в корзине');render();return}
-  if(ds.cat){S.cat=ds.cat;render();return}
+  if(ds.cat){S.cat=ds.cat;S.chipJump=true;render();var sec=$('view').querySelector('.sec-title');if(sec&&sec.getBoundingClientRect().top<0)window.scrollTo(0,window.scrollY+sec.getBoundingClientRect().top-12);return}
   if(ds.tabGo){go(ds.tabGo);return}
   if(ds.date){S.date=ds.date;save();render();return}
   if(ds.inc){setQty(ds.inc,(S.cart[ds.inc]||0)+1);render();return}
