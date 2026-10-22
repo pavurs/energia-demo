@@ -1,9 +1,10 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" class="boot">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#E8E7E4">
+<meta name="theme-color" content="#833B36">
+<style>html.boot,html.boot body{background:#833B36!important}html.boot #login,html.boot #shell,html.boot nav.tabs{visibility:hidden}</style>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Фермерофф">
@@ -238,11 +239,11 @@ textarea.input{height:auto;min-height:52px;padding:14px 18px;resize:none;border-
   var sp=document.getElementById('splash');if(!sp)return;
   var meta=document.querySelector('meta[name="theme-color"]');
   if(!meta){meta=document.createElement('meta');meta.name='theme-color';document.head.appendChild(meta)}
-  var prev=meta.getAttribute('content')||'#F0EEE9';meta.setAttribute('content','#833B36');
+  var prev='#E8E7E4';meta.setAttribute('content','#833B36');
   var standalone=window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches;
   var seen=false;try{seen=!standalone&&sessionStorage.getItem('en-splash2')==='1'}catch(e){}
   var raf=0,left=false;
-  function done(){cancelAnimationFrame(raf);if(sp.parentNode)sp.parentNode.removeChild(sp);meta.setAttribute('content',prev)}
+  function done(){cancelAnimationFrame(raf);if(sp.parentNode)sp.parentNode.removeChild(sp);meta.setAttribute('content',prev);document.documentElement.classList.remove('boot')}
   if(seen){done();return}
   try{sessionStorage.setItem('en-splash2','1')}catch(e){}
   var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
