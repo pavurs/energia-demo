@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#833B36">
-<style>html.boot,html.boot body{background:#833B36!important}html.boot #login,html.boot #shell,html.boot nav.tabs{visibility:hidden}</style>
+<meta name="theme-color" content="#F1EAE2">
+<style>html.boot,html.boot body{background:#F1EAE2!important}html.boot #login,html.boot #shell,html.boot nav.tabs{visibility:hidden}</style>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Фермерофф">
@@ -13,19 +13,25 @@
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}
-/* splash: a string of sausages flies in and twists into a balloon dog, then the red sheet lifts away */
-#splash{position:fixed;inset:0;z-index:100;background:#833B36;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:env(safe-area-inset-top,0px) 16px env(safe-area-inset-bottom,0px);overflow:hidden;cursor:pointer}
-#splash .sp-glow{position:absolute;left:50%;top:42%;width:560px;height:560px;max-width:150vw;max-height:150vw;transform:translate(-50%,-50%) scale(.5);border-radius:50%;background:radial-gradient(circle,rgba(241,234,226,.20),rgba(255,214,190,0) 65%);opacity:0;transition:opacity 1.2s ease,transform 1.6s ease;pointer-events:none}
-#splash.go .sp-glow{opacity:1;transform:translate(-50%,-50%) scale(1)}
-#splash svg{width:min(86vw,360px);height:auto;display:block;position:relative;overflow:visible}
-#splash .sp-word{position:relative;margin-top:4px;font-family:var(--f-display);font-weight:400;font-size:48px;line-height:1.05;letter-spacing:1.5px;color:#F1EAE2;opacity:0;transform:translateY(14px);white-space:nowrap;text-align:center;transition:opacity .55s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
-#splash .sp-rule{position:relative;margin-top:14px;width:104px;height:7px;border-radius:4px;background:#F1EAE2;transform:scaleX(0);transition:transform .5s cubic-bezier(.6,0,.2,1) .3s}
-#splash.named .sp-word{opacity:1;transform:none}
-#splash.named .sp-rule{transform:scaleX(1)}
+/* splash: the engraved farmer from the catalogue cover draws itself, then the logo plate rises; the cream sheet lifts away */
+#splash{position:fixed;inset:0;z-index:100;background:#F1EAE2;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:env(safe-area-inset-top,0px) max(18px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(18px,env(safe-area-inset-left,0px));overflow:hidden;cursor:pointer}
+#splash .sp-in{width:min(100%,420px);display:flex;flex-direction:column;align-items:center}
+#splash .eb{display:flex;align-items:center;gap:10px;width:100%;font-family:var(--f-mono);font-weight:600;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#833B36;margin-bottom:12px}
+#splash .eb span{flex:1;height:2px;background:#1E1C1A;transform:scaleX(0);transition:transform .7s cubic-bezier(.6,0,.2,1)}
+#splash .eb span:first-child{transform-origin:right center}
+#splash .eb span:last-child{transform-origin:left center}
+#splash .eb b{font-weight:600;opacity:0;transition:opacity .5s ease .25s;white-space:nowrap}
+#splash.e1 .eb span{transform:scaleX(1)}
+#splash.e1 .eb b{opacity:1}
+#splash canvas{width:100%;height:auto;display:block}
+#splash .plate{margin-top:-16px;position:relative;background:#833B36;color:#F1EAE2;font-family:var(--f-display);font-size:clamp(30px,9.5vw,42px);line-height:1;letter-spacing:1px;padding:12px 26px 10px;border-radius:20px;transform:scale(.6) translateY(16px);opacity:0;transition:transform .55s cubic-bezier(.2,1.4,.3,1),opacity .3s ease}
+#splash.e2 .plate{transform:none;opacity:1}
+#splash .since{margin-top:18px;font-family:var(--f-mono);font-weight:600;font-size:11px;letter-spacing:2px;color:#1E1C1A;opacity:0;transition:opacity .5s ease .2s}
+#splash.e2 .since{opacity:1}
 #splash.out{animation:spLift .6s cubic-bezier(.7,0,.25,1) forwards}
 @keyframes spLift{to{transform:translateY(-100%);border-radius:0 0 50% 50%/0 0 90px 90px}}
 @keyframes spFade2{to{opacity:0}}
-@media (prefers-reduced-motion:reduce){#splash.out{animation:spFade2 .3s ease forwards}#splash .sp-glow{transition:none}}
+@media (prefers-reduced-motion:reduce){#splash *{transition:none!important}#splash.out{animation:spFade2 .3s ease forwards}}
 </style>
 <title>Фермерофф · заказы</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -228,73 +234,59 @@ textarea.input{height:auto;min-height:52px;padding:14px 18px;resize:none;border-
 <body>
 
 
-<div id="splash" role="img" aria-label="Фермерофф — заказ продукции">
-  <div class="sp-glow" aria-hidden="true"></div>
-  <svg id="spSvg" viewBox="0 0 300 300" aria-hidden="true"></svg>
-  <div class="sp-word" aria-hidden="true">ФЕРМЕРОФФ</div>
-  <div class="sp-rule" aria-hidden="true"></div>
+<div id="splash" role="img" aria-label="Фермерофф — продукция мясокомбината">
+  <div class="sp-in" aria-hidden="true">
+    <div class="eb"><span></span><b>Продукция мясокомбината</b><span></span></div>
+    <canvas id="spCv" width="720" height="541"></canvas>
+    <div class="plate">ФЕРМЕРОФФ</div>
+    <div class="since">ОСНОВАНО 2010 Г.</div>
+  </div>
 </div>
 <script>
 (function(){
   var sp=document.getElementById('splash');if(!sp)return;
   var meta=document.querySelector('meta[name="theme-color"]');
   if(!meta){meta=document.createElement('meta');meta.name='theme-color';document.head.appendChild(meta)}
-  var prev='#E8E7E4';meta.setAttribute('content','#833B36');
+  var prev='#E8E7E4';meta.setAttribute('content','#F1EAE2');
   var standalone=window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches;
-  var seen=false;try{seen=!standalone&&sessionStorage.getItem('en-splash2')==='1'}catch(e){}
-  var raf=0,left=false;
-  function done(){cancelAnimationFrame(raf);if(sp.parentNode)sp.parentNode.removeChild(sp);meta.setAttribute('content',prev);document.documentElement.classList.remove('boot')}
+  var seen=false;try{seen=!standalone&&sessionStorage.getItem('ferm-splash')==='1'}catch(e){}
+  var raf=0,timers=[],left=false;
+  function done(){cancelAnimationFrame(raf);timers.forEach(clearTimeout);if(sp.parentNode)sp.parentNode.removeChild(sp);meta.setAttribute('content',prev);document.documentElement.classList.remove('boot')}
   if(seen){done();return}
-  try{sessionStorage.setItem('en-splash2','1')}catch(e){}
+  try{sessionStorage.setItem('ferm-splash','1')}catch(e){}
   var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  var NS='http://www.w3.org/2000/svg',svg=document.getElementById('spSvg');
-  function el(n,a,p){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
-  /* smiling sun: a ring of six links, then eight rays; [x1,y1,x2,y2,width] in chain order */
-  var P=[];(function(){var cx=150,cy=150,i,a,b;for(i=0;i<6;i++){a=(-90+i*60)*Math.PI/180;b=(-90+(i+1)*60)*Math.PI/180;P.push([cx+40*Math.cos(a),cy+40*Math.sin(a),cx+40*Math.cos(b),cy+40*Math.sin(b),26])}for(i=0;i<8;i++){a=(-90+i*45)*Math.PI/180;P.push([cx+60*Math.cos(a),cy+60*Math.sin(a),cx+88*Math.cos(a),cy+88*Math.sin(a),22])}})();
-  var S=P.map(function(q){var dx=q[2]-q[0],dy=q[3]-q[1];return {cx:(q[0]+q[2])/2,cy:(q[1]+q[3])/2,a:Math.atan2(dy,dx)*180/Math.PI,len:Math.max(20,Math.hypot(dx,dy)-1),w:q[4]}});
-  var defs=el('defs',{},svg),g=el('linearGradient',{id:'spG',x1:0,y1:0,x2:0,y2:1},defs);
-  el('stop',{offset:0,'stop-color':'#F2C4AE'},g);el('stop',{offset:1,'stop-color':'#E08E70'},g);
-  var shadow=el('ellipse',{cx:150,cy:268,rx:62,ry:7,fill:'#5A120C',opacity:0},svg);
-  var toy=el('g',{},svg);
-  var nodes=S.map(function(s){var n=el('g',{},toy),h=s.w/2;
-    el('rect',{x:-s.len/2,y:-h,width:s.len,height:s.w,rx:h,fill:'url(#spG)',stroke:'#9E4A36','stroke-width':1.6},n);
-    el('rect',{x:-s.len/2+8,y:-h+5,width:Math.max(4,s.len-16),height:5,rx:2.5,fill:'rgba(255,255,255,.4)'},n);
-    el('path',{d:'M'+(-s.len/2+2)+' -6 l-4 6 l4 6',fill:'none',stroke:'#9E4A36','stroke-width':1.6,'stroke-linecap':'round','stroke-linejoin':'round'},n);
-    el('path',{d:'M'+(s.len/2-2)+' -6 l4 6 l-4 6',fill:'none',stroke:'#9E4A36','stroke-width':1.6,'stroke-linecap':'round','stroke-linejoin':'round'},n);
-    return n});
-  var face=el('g',{opacity:0},toy);
-  el('circle',{cx:138,cy:142,r:3.8,fill:'#2A1F17'},face);el('circle',{cx:162,cy:142,r:3.8,fill:'#2A1F17'},face);
-  el('path',{d:'M136 158 q14 14 28 0',fill:'none',stroke:'#2A1F17','stroke-width':2.8,'stroke-linecap':'round'},face);
-  el('circle',{cx:127,cy:158,r:5.5,fill:'#F08A7E',opacity:.75},face);el('circle',{cx:173,cy:158,r:5.5,fill:'#F08A7E',opacity:.75},face);
-  var start=[],x=40;S.forEach(function(s){start.push({cx:x+s.len/2,cy:160,a:0});x+=s.len+6});
-  var N=S.length,F0=0.5,STEP=0.15,DUR=0.5,END=F0+STEP*(N-1)+DUR;
-  function c01(v){return v<0?0:v>1?1:v}
-  function back(v){var a=1.6,b=a+1;return 1+b*Math.pow(v-1,3)+a*Math.pow(v-1,2)}
-  function out(v){return 1-Math.pow(1-v,3)}
-  function lerp(a,b,t){return a+(b-a)*t}
-  function alerp(a,b,t){var d=((b-a+540)%360)-180;return a+d*t}
-  function pose(t){
-    var off=lerp(320,0,out(c01(t/0.55)));
-    for(var i=0;i<N;i++){var s=S[i],a=start[i],p=c01((t-(F0+i*STEP))/DUR),e=back(p);
-      var cx=lerp(a.cx+off,s.cx,e),cy=lerp(a.cy+Math.sin(t*7+i)*(1-p)*3,s.cy,e),an=alerp(a.a,s.a,e);
-      if(i>=6&&t>END){var r=(t-END)*14,ra=r*Math.PI/180,dx=cx-150,dy=cy-150;cx=150+dx*Math.cos(ra)-dy*Math.sin(ra);cy=150+dx*Math.sin(ra)+dy*Math.cos(ra);an+=r}
-      nodes[i].setAttribute('transform','translate('+cx.toFixed(2)+' '+cy.toFixed(2)+') rotate('+an.toFixed(2)+')')}
-    var d=c01((t-END)/0.35),bo=d>0&&d<1?1+Math.sin(d*Math.PI)*0.06:1;
-    toy.setAttribute('transform','translate(150 150) scale('+bo.toFixed(3)+') translate(-150 -150)');
-    face.setAttribute('opacity',c01((t-END+0.1)/0.3).toFixed(2));
-    shadow.setAttribute('opacity',(0.22*c01((t-END+0.4)/0.5)).toFixed(3));
-  }
   function leave(){if(left)return;left=true;sp.classList.add('out');setTimeout(done,reduce?320:640)}
+  function at(ms,f){timers.push(setTimeout(f,ms))}
   sp.addEventListener('click',leave);
-  if(reduce){pose(END+2);sp.classList.add('go','named');setTimeout(leave,900);return}
-  var t0=0;
-  function tick(now){if(!t0)t0=now;var t=(now-t0)/1000;pose(t);
-    if(t>0.3)sp.classList.add('go');
-    if(t>END+0.15)sp.classList.add('named');
-    if(t>END+1.9){leave();return}
-    raf=requestAnimationFrame(tick)}
-  pose(0);raf=requestAnimationFrame(tick);
+  var cv=document.getElementById('spCv'),ctx=cv.getContext('2d'),W=cv.width,H=cv.height,N=W*H,alpha,tmap,idx,out,img=new Image();
+  function hash(x,y){var h=x*374761393+y*668265263;h=(h^(h>>13))*1274126177;return ((h^(h>>16))>>>0)/4294967295}
+  function vnoise(x,y,s){var gx=x/s,gy=y/s,x0=Math.floor(gx),y0=Math.floor(gy),fx=gx-x0,fy=gy-y0;fx=fx*fx*(3-2*fx);fy=fy*fy*(3-2*fy);var a=hash(x0,y0),b=hash(x0+1,y0),c=hash(x0,y0+1),d=hash(x0+1,y0+1);return a+(b-a)*fx+(c-a)*fy+(a-b-c+d)*fx*fy}
+  function prepare(){
+    var tc=document.createElement('canvas');tc.width=W;tc.height=H;var t2=tc.getContext('2d');t2.drawImage(img,0,0,W,H);
+    var px=t2.getImageData(0,0,W,H).data;alpha=new Float32Array(N);
+    for(var i=0;i<N;i++){var l=px[i*4];alpha[i]=Math.max(0,Math.min(1,(225-l)/190))}
+    /* order: the face first, then outward; contours lead, hatching follows, the rays come last */
+    var fx=W*0.49,fy=H*0.24,maxd=Math.hypot(W*0.55,H*0.8),list=[];tmap=new Float32Array(N);
+    for(var y=1;y<H-1;y++)for(var x=1;x<W-1;x++){var j=y*W+x;if(alpha[j]<0.05)continue;
+      var g=Math.abs(alpha[j+1]-alpha[j-1])+Math.abs(alpha[j+W]-alpha[j-W]);
+      var dd=Math.min(1,Math.hypot((x-fx)*0.9,(y-fy)*1.15)/maxd);
+      tmap[j]=g>0.55?0.02+0.62*dd+0.10*vnoise(x,y,9):0.24+0.62*dd+0.10*vnoise(x+500,y,22)+0.05*(((x*0.6+y)%7)/7);list.push(j)}
+    idx=new Uint32Array(list);out=ctx.createImageData(W,H);
+  }
+  function draw(p){var o=out.data;for(var k=0;k<idx.length;k++){var i=idx[k],v=(p-tmap[i])/0.07;if(v<=0){o[i*4+3]=0;continue}if(v>1)v=1;var q=i*4;o[q]=30;o[q+1]=28;o[q+2]=26;o[q+3]=alpha[i]*v*255}ctx.putImageData(out,0,0)}
+  function play(){
+    if(reduce){draw(2);sp.classList.add('e1','e2');at(900,leave);return}
+    draw(0);var D=2600,t0=0;
+    at(150,function(){sp.classList.add('e1')});
+    function tick(now){if(!t0)t0=now;var p=(now-t0)/D;draw(Math.min(1.05,p*1.08));if(p<1&&!left)raf=requestAnimationFrame(tick)}
+    at(250,function(){raf=requestAnimationFrame(tick)});
+    at(2700,function(){sp.classList.add('e2')});
+    at(4300,leave);
+  }
+  img.onload=function(){try{prepare();play()}catch(e){leave()}};
+  img.onerror=leave;
+  at(9000,leave);
+  img.src='brand/farmer_ink.png';
 })();
 </script>
 <div id="login" hidden>
