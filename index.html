@@ -277,7 +277,7 @@ textarea.input{height:auto;min-height:52px;padding:14px 18px;resize:none;border-
   function tick(now){if(!t0)t0=now;var t=(now-t0)/1000;pose(t);
     if(t>0.3)sp.classList.add('go');
     if(t>END+0.15)sp.classList.add('named');
-    if(t>END+4.6){leave();return}
+    if(t>END+3.6){leave();return}
     raf=requestAnimationFrame(tick)}
   pose(0);raf=requestAnimationFrame(tick);
 })();
