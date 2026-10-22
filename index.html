@@ -12,33 +12,19 @@
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}
-/* splash: monogram rises out of a slot, cream rule draws, wordmark spaces in, then the red sheet lifts away */
-#splash{position:fixed;inset:0;z-index:100;background:var(--accent);color:#FFF6EA;display:flex;align-items:center;justify-content:center;padding:env(safe-area-inset-top,0px) 16px env(safe-area-inset-bottom,0px)}
-#splash .sp-in{display:flex;flex-direction:column;align-items:center;gap:0}
-#splash .sp-slot{overflow:hidden;height:150px;display:flex;align-items:flex-end}
-#splash .sp-mono{font-family:var(--f-display);font-weight:800;font-size:150px;line-height:1;transform:translateY(105%);display:block}
-#splash .sp-rule{height:7px;width:112px;border-radius:4px;background:#F2D3B0;transform:scaleX(0);transform-origin:left center;margin-top:10px}
-#splash .sp-word{margin-top:26px;font-family:var(--f-body);font-weight:800;font-size:20px;letter-spacing:14px;padding-left:14px;text-transform:uppercase;opacity:0;white-space:nowrap}
-#splash .sp-sub{margin-top:10px;font-size:13px;font-weight:600;letter-spacing:1.4px;color:#F7D9D2;opacity:0}
-#splash .sp-glow{position:absolute;width:520px;height:520px;max-width:140vw;border-radius:50%;background:radial-gradient(circle,rgba(255,214,190,.28),rgba(255,214,190,0) 65%);transform:scale(.4);opacity:0;pointer-events:none}
-#splash.go .sp-mono{animation:spRise .7s cubic-bezier(.2,.8,.2,1) .05s forwards}
-#splash.go .sp-rule{animation:spDraw .5s cubic-bezier(.6,0,.2,1) .55s forwards}
-#splash.go .sp-word{animation:spWord .7s ease-out .8s forwards}
-#splash.go .sp-sub{animation:spFade .5s ease-out 1.15s forwards}
-#splash.go .sp-glow{animation:spGlow 1.6s ease-out .1s forwards}
-#splash.out{animation:spLift .55s cubic-bezier(.7,0,.25,1) forwards}
-@keyframes spRise{to{transform:translateY(0)}}
-@keyframes spDraw{to{transform:scaleX(1)}}
-@keyframes spWord{from{opacity:0;letter-spacing:28px}to{opacity:1;letter-spacing:14px}}
-@keyframes spFade{to{opacity:1}}
-@keyframes spGlow{60%{opacity:1}to{opacity:.7;transform:scale(1)}}
-@keyframes spLift{to{transform:translateY(-100%);border-radius:0 0 40% 40%/0 0 80px 80px}}
-@media (prefers-reduced-motion:reduce){
-  #splash .sp-mono,#splash .sp-rule,#splash .sp-word,#splash .sp-sub{transform:none;opacity:1;animation:none!important}
-  #splash .sp-glow{display:none}
-  #splash.out{animation:spFade2 .3s ease forwards}
-}
+/* splash: a string of sausages flies in and twists into a balloon dog, then the red sheet lifts away */
+#splash{position:fixed;inset:0;z-index:100;background:#C2372A;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:env(safe-area-inset-top,0px) 16px env(safe-area-inset-bottom,0px);overflow:hidden;cursor:pointer}
+#splash .sp-glow{position:absolute;left:50%;top:42%;width:560px;height:560px;max-width:150vw;max-height:150vw;transform:translate(-50%,-50%) scale(.5);border-radius:50%;background:radial-gradient(circle,rgba(255,214,190,.30),rgba(255,214,190,0) 65%);opacity:0;transition:opacity 1.2s ease,transform 1.6s ease;pointer-events:none}
+#splash.go .sp-glow{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#splash svg{width:min(86vw,360px);height:auto;display:block;position:relative;overflow:visible}
+#splash .sp-word{position:relative;margin-top:4px;font-family:var(--f-display);font-weight:800;font-size:46px;line-height:1.05;letter-spacing:.5px;color:#FFF6EA;opacity:0;transform:translateY(14px);white-space:nowrap;text-align:center;transition:opacity .55s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
+#splash .sp-rule{position:relative;margin-top:14px;width:104px;height:7px;border-radius:4px;background:#F2D3B0;transform:scaleX(0);transition:transform .5s cubic-bezier(.6,0,.2,1) .3s}
+#splash.named .sp-word{opacity:1;transform:none}
+#splash.named .sp-rule{transform:scaleX(1)}
+#splash.out{animation:spLift .6s cubic-bezier(.7,0,.25,1) forwards}
+@keyframes spLift{to{transform:translateY(-100%);border-radius:0 0 50% 50%/0 0 90px 90px}}
 @keyframes spFade2{to{opacity:0}}
+@media (prefers-reduced-motion:reduce){#splash.out{animation:spFade2 .3s ease forwards}#splash .sp-glow{transition:none}}
 </style>
 <title>Энергия · заказы</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -229,12 +215,9 @@ textarea.input{height:auto;min-height:52px;padding:14px 18px;resize:none;border-
 
 <div id="splash" role="img" aria-label="Энергия — заказ продукции">
   <div class="sp-glow" aria-hidden="true"></div>
-  <div class="sp-in" aria-hidden="true">
-    <div class="sp-slot"><span class="sp-mono">Э</span></div>
-    <div class="sp-rule"></div>
-    <div class="sp-word">Энергия</div>
-    <div class="sp-sub">заказ продукции для партнёров</div>
-  </div>
+  <svg id="spSvg" viewBox="0 0 300 300" aria-hidden="true"></svg>
+  <div class="sp-word" aria-hidden="true">Энергия</div>
+  <div class="sp-rule" aria-hidden="true"></div>
 </div>
 <script>
 (function(){
@@ -243,17 +226,59 @@ textarea.input{height:auto;min-height:52px;padding:14px 18px;resize:none;border-
   if(!meta){meta=document.createElement('meta');meta.name='theme-color';document.head.appendChild(meta)}
   var prev=meta.getAttribute('content')||'#F0EEE9';meta.setAttribute('content','#C2372A');
   var standalone=window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches;
-  var seen=false;try{seen=!standalone&&sessionStorage.getItem('en-splash')==='1'}catch(e){}
-  function done(){if(!sp.parentNode)return;sp.parentNode.removeChild(sp);meta.setAttribute('content',prev)}
+  var seen=false;try{seen=!standalone&&sessionStorage.getItem('en-splash2')==='1'}catch(e){}
+  var raf=0,left=false;
+  function done(){cancelAnimationFrame(raf);if(sp.parentNode)sp.parentNode.removeChild(sp);meta.setAttribute('content',prev)}
   if(seen){done();return}
-  try{sessionStorage.setItem('en-splash','1')}catch(e){}
+  try{sessionStorage.setItem('en-splash2','1')}catch(e){}
   var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var left=false;
-  function leave(){if(left)return;left=true;sp.classList.add('out');setTimeout(done,reduce?320:580)}
-  function start(){sp.classList.add('go');setTimeout(leave,reduce?700:2200)}
+
+  var NS='http://www.w3.org/2000/svg',svg=document.getElementById('spSvg');
+  function el(n,a,p){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+  /* balloon dog facing left; [x1,y1,x2,y2,width] for each twisted link, in chain order */
+  var P=[[52,128,94,134,27],[96,130,104,96,30],[104,134,124,104,30],[108,144,130,186,26],[124,192,116,252,26],[138,192,140,252,26],[132,188,206,182,30],[200,190,192,252,26],[214,190,220,252,26],[210,178,236,138,24]];
+  var S=P.map(function(q){var dx=q[2]-q[0],dy=q[3]-q[1];return {cx:(q[0]+q[2])/2,cy:(q[1]+q[3])/2,a:Math.atan2(dy,dx)*180/Math.PI,len:Math.max(20,Math.hypot(dx,dy)-1),w:q[4]}});
+  var defs=el('defs',{},svg),g=el('linearGradient',{id:'spG',x1:0,y1:0,x2:0,y2:1},defs);
+  el('stop',{offset:0,'stop-color':'#F8C9B0'},g);el('stop',{offset:1,'stop-color':'#E08E70'},g);
+  var shadow=el('ellipse',{cx:150,cy:262,rx:84,ry:8,fill:'#5A120C',opacity:0},svg);
+  var toy=el('g',{},svg);
+  var nodes=S.map(function(s){var n=el('g',{},toy),h=s.w/2;
+    el('rect',{x:-s.len/2,y:-h,width:s.len,height:s.w,rx:h,fill:'url(#spG)',stroke:'#9E4A36','stroke-width':1.6},n);
+    el('rect',{x:-s.len/2+8,y:-h+5,width:Math.max(4,s.len-16),height:5,rx:2.5,fill:'rgba(255,255,255,.4)'},n);
+    el('path',{d:'M'+(-s.len/2+2)+' -6 l-4 6 l4 6',fill:'none',stroke:'#9E4A36','stroke-width':1.6,'stroke-linecap':'round','stroke-linejoin':'round'},n);
+    el('path',{d:'M'+(s.len/2-2)+' -6 l4 6 l-4 6',fill:'none',stroke:'#9E4A36','stroke-width':1.6,'stroke-linecap':'round','stroke-linejoin':'round'},n);
+    return n});
+  var face=el('g',{opacity:0},toy);
+  el('circle',{cx:88,cy:122,r:3.6,fill:'#2A1F17'},face);el('circle',{cx:89.2,cy:120.8,r:1.1,fill:'#FFF6EA'},face);
+  el('circle',{cx:50,cy:128,r:5.5,fill:'#2A1F17'},face);
+  var start=[],x=40;S.forEach(function(s){start.push({cx:x+s.len/2,cy:160,a:0});x+=s.len+6});
+  var N=S.length,F0=0.5,STEP=0.15,DUR=0.5,END=F0+STEP*(N-1)+DUR;
+  function c01(v){return v<0?0:v>1?1:v}
+  function back(v){var a=1.6,b=a+1;return 1+b*Math.pow(v-1,3)+a*Math.pow(v-1,2)}
+  function out(v){return 1-Math.pow(1-v,3)}
+  function lerp(a,b,t){return a+(b-a)*t}
+  function alerp(a,b,t){var d=((b-a+540)%360)-180;return a+d*t}
+  function pose(t){
+    var off=lerp(320,0,out(c01(t/0.55)));
+    for(var i=0;i<N;i++){var s=S[i],a=start[i],p=c01((t-(F0+i*STEP))/DUR),e=back(p);
+      var cx=lerp(a.cx+off,s.cx,e),cy=lerp(a.cy+Math.sin(t*7+i)*(1-p)*3,s.cy,e),an=alerp(a.a,s.a,e);
+      if(i===N-1&&t>END){var k=Math.max(0,1-(t-END)/1.4);an+=Math.sin((t-END)*15)*12*k}
+      nodes[i].setAttribute('transform','translate('+cx.toFixed(2)+' '+cy.toFixed(2)+') rotate('+an.toFixed(2)+')')}
+    var d=c01((t-END)/0.35),bo=d>0&&d<1?1+Math.sin(d*Math.PI)*0.06:1;
+    toy.setAttribute('transform','translate(150 200) scale('+bo.toFixed(3)+') translate(-145 -200)');
+    face.setAttribute('opacity',c01((t-END+0.1)/0.3).toFixed(2));
+    shadow.setAttribute('opacity',(0.22*c01((t-END+0.4)/0.5)).toFixed(3));
+  }
+  function leave(){if(left)return;left=true;sp.classList.add('out');setTimeout(done,reduce?320:640)}
   sp.addEventListener('click',leave);
-  var started=false;function go(){if(!started){started=true;start()}}
-  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(go);setTimeout(go,600)}else go();
+  if(reduce){pose(END+2);sp.classList.add('go','named');setTimeout(leave,900);return}
+  var t0=0;
+  function tick(now){if(!t0)t0=now;var t=(now-t0)/1000;pose(t);
+    if(t>0.3)sp.classList.add('go');
+    if(t>END+0.15)sp.classList.add('named');
+    if(t>END+1.35){leave();return}
+    raf=requestAnimationFrame(tick)}
+  pose(0);raf=requestAnimationFrame(tick);
 })();
 </script>
 <div id="login" hidden>
