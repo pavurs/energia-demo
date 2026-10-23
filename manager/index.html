@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2F4A3A">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Менеджер">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}</style>
+<title>Фермерофф · Менеджер</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Forum&family=IBM+Plex+Mono:wght@500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: one phone column (max 560px), sticky top context bar, bottom tabs; sheets slide up for product options and forms */
+:root{
+  --bg:#E8E7E4; --surface:#F4F4F3; --card:#FFFFFF; --ink:#1E1C1A; --muted:#5F5954; --line:#DAD7D2;
+  --maroon:#833B36; --maroon-ink:#F1EAE2; --maroon-soft:#F1DEDA; --cream:#F1EAE2;
+  --forest:#2F4A3A; --forest-ink:#EEF2EC; --dark:#2B2826; --dark-ink:#F4F1EC; --ok:#2F6B3A; --ok-soft:#DCEBDD; --warn:#8A4B0B; --warn-soft:#FBEBD3;
+  --f-display:'Forum', Georgia, serif; --f-mono:'IBM Plex Mono','Courier New',monospace; --f-body:'Montserrat',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{min-height:100%}
+body{margin:0;font-synthesis:none;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:40;background:var(--forest)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--maroon);outline-offset:2px}
+h1,h2,h3{margin:0;text-wrap:balance}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font-family:var(--f-mono);font-size:11px;font-weight:600;letter-spacing:1.6px;text-transform:uppercase;color:var(--maroon)}
+.hint{font-size:12.5px;color:var(--muted);line-height:1.45;margin:0}
+
+/* gate */
+#gate{min-height:100vh;background:var(--cream);display:flex;align-items:center}
+.gate{display:flex;flex-direction:column;gap:14px;padding-block:40px;width:100%}
+.gate .eb{display:flex;align-items:center;gap:12px;font-family:var(--f-mono);font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--maroon)}
+.gate .eb span{flex:1;height:2px;background:var(--ink)}
+.plate{align-self:center;background:var(--maroon);color:var(--cream);font-family:var(--f-display);font-size:40px;letter-spacing:1px;line-height:1;padding:14px 28px 12px;border-radius:22px}
+.gate p{text-align:center}
+label.f{display:flex;flex-direction:column;gap:6px;font-family:var(--f-mono);font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--maroon)}
+label.f small{font-family:var(--f-body);letter-spacing:0;text-transform:none;color:var(--muted);font-weight:500;font-size:12px}
+.in{height:48px;border-radius:14px;border:1px solid var(--line);background:var(--card);padding:0 14px;font-family:var(--f-body);font-size:15.5px;letter-spacing:normal;text-transform:none;color:var(--ink);width:100%;min-width:0}
+textarea.in{height:auto;min-height:76px;padding:12px 14px;resize:vertical}
+.in.code{letter-spacing:2px;font-weight:700;text-transform:uppercase}
+.err{color:var(--maroon);font-weight:700;font-size:13px}
+.btn{height:50px;border-radius:25px;border:1px solid var(--line);background:var(--card);font-weight:800;font-size:15px;padding:0 20px;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
+.btn.main{background:var(--maroon);border-color:var(--maroon);color:var(--maroon-ink);box-shadow:0 8px 18px rgba(131,59,54,.25)}
+.btn.dark{background:var(--dark);border-color:var(--dark);color:var(--dark-ink)}
+.btn.sm{height:38px;font-size:13.5px;padding:0 14px}
+.btn.wide{width:100%}
+.btn[disabled]{opacity:.45;box-shadow:none;cursor:default}
+
+/* top bar */
+header.top{background:var(--forest);color:var(--forest-ink);position:sticky;top:env(safe-area-inset-top,0px);z-index:30}
+header.top .wrap{display:flex;align-items:center;gap:10px;padding-block:10px}
+.mark{background:var(--maroon);color:var(--cream);font-family:var(--f-display);font-size:17px;line-height:1;padding:6px 10px 5px;border-radius:9px}
+header.top .who{font-family:var(--f-mono);font-size:10.5px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;color:#C9D4CB}
+header.top .who b{display:block;font-family:var(--f-body);letter-spacing:0;text-transform:none;font-size:13px;color:#fff}
+main{padding-block:16px calc(150px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px}
+h1.t{font-family:var(--f-display);font-weight:400;font-size:32px;line-height:1.05}
+.card{background:var(--card);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.row{display:flex;align-items:center;gap:10px}
+.row .grow{flex:1;min-width:0}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.chips::-webkit-scrollbar{display:none}
+.chip{height:38px;padding:0 14px;border-radius:19px;border:1px solid var(--line);background:var(--card);font-size:13.5px;font-weight:700;white-space:nowrap;flex-shrink:0}
+.chip.on{background:var(--dark);border-color:var(--dark);color:var(--dark-ink)}
+.chip small{font-weight:600;opacity:.75;margin-left:4px}
+.pick{display:flex;align-items:center;gap:12px;width:100%;border:0;background:var(--card);border-radius:18px;padding:12px 14px;text-align:left}
+.pick .ic{width:42px;height:42px;border-radius:21px;background:var(--maroon-soft);color:var(--maroon);display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0}
+.pick b{display:block;font-size:15px}
+.pick span{font-size:12.5px;color:var(--muted)}
+.cat-badge{font-family:var(--f-mono);font-size:10.5px;font-weight:700;letter-spacing:.8px;padding:3px 8px;border-radius:8px;background:var(--surface);color:var(--ink);white-space:nowrap}
+.search{display:flex;align-items:center;gap:8px;height:46px;border-radius:23px;background:var(--card);border:1px solid var(--line);padding:0 16px}
+.search input{border:0;outline:none;background:transparent;flex:1;min-width:0;font-size:15px}
+.plist{display:flex;flex-direction:column;gap:8px}
+.prod{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:16px;padding:8px 10px 8px 8px;border:0;width:100%;text-align:left}
+.prod img{width:58px;height:58px;border-radius:12px;object-fit:cover;background:var(--surface);flex-shrink:0}
+.prod .mid{flex:1;min-width:0}
+.prod .mid b{display:block;font-family:var(--f-mono);font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.2px;line-height:1.3}
+.prod .mid span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.prod .pr{text-align:right;flex-shrink:0}
+.prod .pr b{font-family:var(--f-display);font-weight:400;font-size:19px;display:block;white-space:nowrap}
+.prod .pr span{font-size:11px;color:var(--muted)}
+.prod .q{min-width:32px;height:32px;border-radius:16px;background:var(--ok-soft);color:var(--ok);font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;padding:0 8px}
+.prod .add{width:36px;height:36px;border-radius:18px;background:var(--maroon);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;flex-shrink:0}
+.cartbar{position:fixed;left:0;right:0;bottom:calc(70px + env(safe-area-inset-bottom,0px));z-index:31;pointer-events:none}
+.cartbar .wrap{pointer-events:auto}
+.cartbar button{width:100%;height:58px;border-radius:29px;border:0;background:var(--maroon);color:var(--maroon-ink);display:flex;align-items:center;gap:12px;padding:0 8px 0 20px;box-shadow:0 10px 22px rgba(131,59,54,.3)}
+.cartbar .l{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15}
+.cartbar .l span{font-size:12px;opacity:.85}.cartbar .l b{font-size:16.5px}
+.cartbar .r{margin-left:auto;height:42px;padding:0 18px;border-radius:21px;background:var(--cream);color:var(--maroon);font-weight:800;display:flex;align-items:center}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:32;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav.tabs .wrap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));height:66px}
+nav.tabs button{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:700;color:var(--muted)}
+nav.tabs button.on{color:var(--maroon);font-weight:800}
+.line{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid #EFEDEA}
+.line:first-child{border-top:0;padding-top:0}
+.line img{width:48px;height:48px;border-radius:10px;object-fit:cover;flex-shrink:0}
+.line .mid{flex:1;min-width:0}
+.line .mid b{display:block;font-size:14px}
+.line .mid span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.line .opt{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.line .opt i{font-style:normal;font-size:11px;font-weight:700;background:var(--surface);border-radius:7px;padding:2px 7px}
+.step{display:flex;align-items:center;background:var(--surface);border-radius:18px;flex-shrink:0}
+.step button{width:36px;height:38px;border:0;background:transparent;font-size:18px}
+.step b{min-width:26px;text-align:center;font-size:14px}
+.totals{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.totals b{font-family:var(--f-display);font-weight:400;font-size:30px}
+.dates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.date{height:58px;border-radius:16px;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.date b{font-size:14.5px}.date span{font-size:11.5px;color:var(--muted)}
+.date.on{background:var(--dark);border-color:var(--dark);color:var(--dark-ink)}.date.on span{color:#CFC8C0}
+.st{display:inline-block;font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:9px;white-space:nowrap}
+.s0{background:#ECE6DE;color:#5E4630}.s1{background:var(--warn-soft);color:var(--warn)}.s4{background:var(--ok-soft);color:var(--ok)}
+.keybox{display:flex;align-items:center;gap:10px;background:var(--surface);border-radius:14px;padding:12px 14px}
+.keybox code{flex:1;font-family:var(--f-mono);font-size:16px;font-weight:700;letter-spacing:1.5px;word-break:break-all}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.opt-b{min-height:42px;padding:8px 14px;border-radius:14px;border:1px solid var(--line);background:var(--card);font-size:14px;font-weight:600;text-align:left}
+.opt-b.on{border:2px solid var(--maroon);background:var(--maroon-soft);color:var(--maroon);padding:7px 13px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13.5px}
+.kv span{color:var(--muted)}
+.empty{background:var(--card);border-radius:18px;padding:24px 18px;text-align:center;color:var(--muted)}
+.prices{width:100%;border-collapse:collapse;font-size:13.5px}
+.prices td{padding:8px 0;border-top:1px solid #EFEDEA}
+.prices td.r{text-align:right;white-space:nowrap}
+.prices tr:first-child td{border-top:0}
+
+/* sheet */
+.scrim{position:fixed;inset:0;z-index:50;background:rgba(30,28,26,.45);display:flex;align-items:flex-end;justify-content:center}
+.sheet{width:100%;max-width:560px;max-height:94%;overflow:auto;background:var(--bg);border-radius:26px 26px 0 0;padding:18px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:12px;animation:up .2s ease}
+@keyframes up{from{transform:translateY(30px);opacity:.6}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.sheet{animation:none}}
+.sheet .hd{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.sheet h2{font-family:var(--f-display);font-weight:400;font-size:26px;line-height:1.1}
+.x{width:40px;height:40px;border-radius:20px;border:0;background:var(--card);font-size:17px;flex-shrink:0}
+.ph{display:flex;gap:12px;align-items:center}
+.ph img{width:84px;height:84px;border-radius:14px;object-fit:cover;flex-shrink:0}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.grid2 .full{grid-column:1/-1}
+.toast{position:fixed;left:50%;bottom:calc(140px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--dark);color:var(--dark-ink);padding:10px 16px;border-radius:16px;font-weight:700;font-size:13.5px;z-index:70;max-width:calc(100% - 32px);text-align:center}
+.demo{font-size:11.5px;color:var(--muted);text-align:center}
+</style>
+</head>
+<body>
+
+
+<div id="gate"><form class="gate wrap" id="gateForm" novalidate>
+  <div class="eb"><span></span>Приложение менеджера<span></span></div>
+  <div class="plate">ФЕРМЕРОФФ</div>
+  <p class="hint">Заявки клиентов, карты клиентов, ценовые категории и ключи доступа. Войдите по ключу менеджера.</p>
+  <label class="f" for="mkey">Ключ менеджера<input class="in code" id="mkey" autocomplete="off" autocapitalize="characters" placeholder="MGR-XXXX-XXXX-XXXX"></label>
+  <label class="f" for="mname">Ваше имя<input class="in" id="mname" autocomplete="name" placeholder="Например, Ольга"></label>
+  <div class="err" id="gerr" hidden></div>
+  <button class="btn main wide" type="submit">Войти</button>
+</form></div>
+
+<div id="app" hidden>
+  <header class="top"><div class="wrap"><div class="mark">ФЕРМЕРОФФ</div><div class="who">Менеджер<b id="who">—</b></div></div></header>
+  <main class="wrap" id="view"></main>
+</div>
+<div class="cartbar" id="cartbar" hidden><div class="wrap"><button type="button" data-tab="cart"><div class="l"><span id="cbN">0 позиций</span><b class="num" id="cbS">0 ₽</b></div><span class="r">Корзина</span></button></div></div>
+<nav class="tabs" id="tabs" hidden aria-label="Разделы"><div class="wrap">
+  <button type="button" data-tab="order"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Заявка</button>
+  <button type="button" data-tab="orders"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M7 3h10v18l-5-3-5 3z"/></svg>Заявки</button>
+  <button type="button" data-tab="clients"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.6 3.6-5.5 6.5-5.5s5.5 1.9 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.8c1.6.8 2.6 2.5 3 5.2"/></svg>Клиенты</button>
+  <button type="button" data-tab="prices"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.5"/></svg>Цены</button>
+</div></nav>
+<div id="overlay"></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+'use strict';
+var P=[{"id": "p65", "name": "ВозьмиКо колбаса вареная куриная", "cat": "Вареные колбасы", "unit": "шт.", "w": 1.0, "tag": "", "pk": "изделие ~1 кг", "sshort": "до 60 сут.", "temp": "0…+6 °С"}, {"id": "p67", "name": "Для Ланча колбаса", "cat": "Вареные колбасы", "unit": "шт.", "w": 1.0, "tag": "", "pk": "изделие ~1 кг", "sshort": "до 60 сут.", "temp": "0…+6 °С"}, {"id": "p68", "name": "Для Окрошки", "cat": "Вареные колбасы", "unit": "шт.", "w": 0.7, "tag": "", "pk": "изделие ~700 г", "sshort": "до 60 сут.", "temp": "0…+6 °С"}, {"id": "p69", "name": "Докторская колбаса н/о", "cat": "Вареные колбасы", "unit": "шт.", "w": 1.5, "tag": "", "pk": "изделие ~1,5 кг", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p70", "name": "Докторская колбаса", "cat": "Вареные колбасы", "unit": "шт.", "w": 0.7, "tag": "", "pk": "изделие ~700 г", "sshort": "до 60 сут.", "temp": "0…+6 °С"}, {"id": "p71", "name": "Докторская колбаса целофан", "cat": "Вареные колбасы", "unit": "шт.", "w": 1.5, "tag": "", "pk": "изделие ~1,5 кг", "sshort": "до 60 сут.", "temp": "0…+6 °С"}, {"id": "p72", "name": "Колбаса вареная «Мясная» с фисташками", "cat": "Вареные колбасы", "unit": "шт.", "w": 1.5, "tag": "Новинка", "pk": "изделие ~1,5 кг", "sshort": "до 10 сут.", "temp": "0…+6 °С"}, {"id": "p73", "name": "Премиум колбаса", "cat": "Вареные колбасы", "unit": "шт.", "w": 1.5, "tag": "", "pk": "изделие ~1,5 кг", "sshort": "до 40 сут.", "temp": "0…+6 °С"}, {"id": "p74", "name": "Любительская колбаса н/об", "cat": "Вареные колбасы", "unit": "шт.", "w": 1.5, "tag": "", "pk": "изделие ~1,5 кг", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p75", "name": "Русская колбаса", "cat": "Вареные колбасы", "unit": "шт.", "w": 0.7, "tag": "", "pk": "изделие ~700 г", "sshort": "до 60 сут.", "temp": "0…+6 °С"}, {"id": "p76", "name": "Ветчина к чаю", "cat": "Ветчина", "unit": "шт.", "w": 0.7, "tag": "", "pk": "изделие ~700 г", "sshort": "до 60 сут.", "temp": "0…+6 °С"}, {"id": "p77", "name": "Ветчина Классическая", "cat": "Ветчина", "unit": "шт.", "w": 0.7, "tag": "", "pk": "изделие ~700 г", "sshort": "до 60 сут.", "temp": "0…+6 °С"}, {"id": "p78", "name": "Ветчина Популярная", "cat": "Ветчина", "unit": "шт.", "w": 0.7, "tag": "", "pk": "изделие ~700 г", "sshort": "до 60 сут.", "temp": "0…+6 °С"}, {"id": "p79", "name": "Ветчина Тэамо", "cat": "Ветчина", "unit": "шт.", "w": 0.7, "tag": "", "pk": "изделие ~700 г", "sshort": "до 60 сут.", "temp": "0…+6 °С"}, {"id": "p80", "name": "Ветчина Люблетта", "cat": "Ветчина", "unit": "шт.", "w": 0.7, "tag": "", "pk": "изделие ~700 г", "sshort": "до 60 сут.", "temp": "0…+6 °С"}, {"id": "p87", "name": "Сосиски Бокс", "cat": "Сосиски", "unit": "уп.", "w": 1.0, "tag": "", "pk": "упаковка 1 кг", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p88", "name": "Сосиски Молочные", "cat": "Сосиски", "unit": "уп.", "w": 1.0, "tag": "", "pk": "упаковка 1 кг", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p89", "name": "Сосиски Премиум", "cat": "Сосиски", "unit": "уп.", "w": 1.0, "tag": "", "pk": "упаковка 1 кг", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p90", "name": "Сосиски ВозьмиКо куриные", "cat": "Сосиски", "unit": "уп.", "w": 1.0, "tag": "", "pk": "упаковка 1 кг", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p91", "name": "Сосиски Оригинальные", "cat": "Сосиски", "unit": "уп.", "w": 1.0, "tag": "", "pk": "упаковка 1 кг", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p92", "name": "Сосиски Приятные", "cat": "Сосиски", "unit": "уп.", "w": 1.0, "tag": "", "pk": "упаковка 1 кг", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p93", "name": "Сосиски «Сайкл»", "cat": "Сосиски", "unit": "уп.", "w": 0.3, "tag": "", "pk": "упаковка 300 г", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p81", "name": "Сардельки Говяжьи", "cat": "Сардельки", "unit": "уп.", "w": 1.0, "tag": "", "pk": "упаковка 1 кг", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p82", "name": "Сардельки Копченые", "cat": "Сардельки", "unit": "уп.", "w": 1.0, "tag": "", "pk": "упаковка 1 кг", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p83", "name": "Шарики «С сыром»", "cat": "Сардельки", "unit": "уп.", "w": 1.0, "tag": "", "pk": "упаковка 1 кг", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p84", "name": "Сардельки Знатные с маслицем", "cat": "Сардельки", "unit": "уп.", "w": 1.0, "tag": "", "pk": "упаковка 1 кг", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p85", "name": "Сардельки Подмосковные", "cat": "Сардельки", "unit": "уп.", "w": 1.0, "tag": "", "pk": "упаковка 1 кг", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p86", "name": "Шпикачки Затейные", "cat": "Сардельки", "unit": "уп.", "w": 1.0, "tag": "", "pk": "упаковка 1 кг", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p46", "name": "АморЭ в/к", "cat": "Копчёные колбасы", "unit": "шт.", "w": 1.0, "tag": "", "pk": "изделие ~1 кг", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p47", "name": "Венская в/к", "cat": "Копчёные колбасы", "unit": "шт.", "w": 0.5, "tag": "", "pk": "изделие ~500 г", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p48", "name": "Сервелат «Меркадо»", "cat": "Копчёные колбасы", "unit": "уп.", "w": 0.08, "tag": "Новинка", "pk": "упаковка 80 г, 500 г", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p49", "name": "Балычковая в/к", "cat": "Копчёные колбасы", "unit": "шт.", "w": 0.7, "tag": "", "pk": "изделие ~700 г", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p50", "name": "Домашняя особая в/к", "cat": "Копчёные колбасы", "unit": "шт.", "w": 0.5, "tag": "", "pk": "изделие ~500 г", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p51", "name": "Колбаски в/к с сыром", "cat": "Копчёные колбасы", "unit": "шт.", "w": 0.3, "tag": "", "pk": "изделие ~300 г", "sshort": "до 180 сут.", "temp": "0…+6 °С"}, {"id": "p52", "name": "Колбаски Венские в/к", "cat": "Копчёные колбасы", "unit": "шт.", "w": 0.5, "tag": "", "pk": "изделие ~500 г", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p53", "name": "Краковская", "cat": "Копчёные колбасы", "unit": "шт.", "w": 0.6, "tag": "", "pk": "изделие ~600 г", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p54", "name": "Популярная в/к", "cat": "Копчёные колбасы", "unit": "шт.", "w": 0.4, "tag": "", "pk": "изделие ~400 г", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p55", "name": "Колбаски Копченые в/к", "cat": "Копчёные колбасы", "unit": "шт.", "w": 0.5, "tag": "Новинка", "pk": "изделие ~500 г", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p56", "name": "Пепперони в/к", "cat": "Копчёные колбасы", "unit": "шт.", "w": 0.4, "tag": "", "pk": "изделие ~400 г", "sshort": "до 20 сут.", "temp": "0…+6 °С"}, {"id": "p57", "name": "Праздничная в/к", "cat": "Копчёные колбасы", "unit": "шт.", "w": 0.9, "tag": "", "pk": "изделие ~900 г", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p58", "name": "Престо в/к", "cat": "Копчёные колбасы", "unit": "шт.", "w": 0.5, "tag": "", "pk": "изделие ~500 г", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p59", "name": "Сервелат Банкетный в/к", "cat": "Копчёные колбасы", "unit": "шт.", "w": 0.4, "tag": "", "pk": "изделие ~400 г", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p60", "name": "Сервелат Ромовый в/к", "cat": "Копчёные колбасы", "unit": "шт.", "w": 1.5, "tag": "", "pk": "изделие ~1,5 кг", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p61", "name": "С брусникой в/к", "cat": "Копчёные колбасы", "unit": "шт.", "w": 0.8, "tag": "", "pk": "изделие ~800 г", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p62", "name": "Сервелат Европа в/к", "cat": "Копчёные колбасы", "unit": "шт.", "w": 0.3, "tag": "", "pk": "изделие ~300 г", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p63", "name": "Сервелат Ярмарочный в/к", "cat": "Копчёные колбасы", "unit": "шт.", "w": 0.4, "tag": "Новинка", "pk": "изделие ~400 г", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p64", "name": "Сервелатная в/к", "cat": "Копчёные колбасы", "unit": "шт.", "w": 0.4, "tag": "Новинка", "pk": "изделие ~400 г", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p66", "name": "Колбаски Альпийские", "cat": "Копчёные колбасы", "unit": "шт.", "w": 0.1, "tag": "", "pk": "~100 г", "sshort": "до 30 сут.", "temp": "0…+6 °С"}, {"id": "p23", "name": "Астурийская Салями с/к", "cat": "Сырокопчёные", "unit": "шт.", "w": 0.3, "tag": "", "pk": "изделие ~250–350 г", "sshort": "до 180 сут.", "temp": "0…+6 °С"}, {"id": "p24", "name": "Валенсия с/к", "cat": "Сырокопчёные", "unit": "шт.", "w": 0.5, "tag": "Новинка", "pk": "изделие ~500 г", "sshort": "до 180 сут.", "temp": "0…+6 °С"}, {"id": "p25", "name": "Итальянская салями с/к", "cat": "Сырокопчёные", "unit": "шт.", "w": 0.5, "tag": "", "pk": "изделие ~500 г", "sshort": "до 180 сут.", "temp": "0…+6 °С"}, {"id": "p26", "name": "Пастрома птицы", "cat": "Сырокопчёные", "unit": "уп.", "w": 0.1, "tag": "", "pk": "упаковка 100 г, 500 г", "sshort": "до 120 сут.", "temp": "0…+6 °С"}, {"id": "p27", "name": "Сальчичон с/к", "cat": "Сырокопчёные", "unit": "шт.", "w": 0.3, "tag": "", "pk": "изделие ~300 г", "sshort": "до 180 сут.", "temp": "0…+6 °С"}, {"id": "p28", "name": "Ми Вида с/к", "cat": "Сырокопчёные", "unit": "шт.", "w": 0.5, "tag": "", "pk": "изделие ~500 г", "sshort": "до 180 сут.", "temp": "0…+6 °С"}, {"id": "p29", "name": "Ромовая с/к", "cat": "Сырокопчёные", "unit": "шт.", "w": 0.5, "tag": "", "pk": "изделие ~500 г", "sshort": "до 180 сут.", "temp": "0…+6 °С"}, {"id": "p30", "name": "Салями Венская с/к", "cat": "Сырокопчёные", "unit": "шт.", "w": 0.3, "tag": "", "pk": "изделие ~300 г", "sshort": "до 180 сут.", "temp": "0…+6 °С"}, {"id": "p31", "name": "Сервелат с брусникой с/к", "cat": "Сырокопчёные", "unit": "шт.", "w": 0.3, "tag": "", "pk": "изделие ~300 г", "sshort": "до 180 сут.", "temp": "0…+6 °С"}, {"id": "p0", "name": "Балычок Бонито в/к", "cat": "Свинина в/к", "unit": "шт.", "w": 1.5, "tag": "", "pk": "изделие ~1,5 кг", "sshort": "до 20 сут.", "temp": "0…+6 °С"}, {"id": "p1", "name": "Грудинка свиная в/к", "cat": "Свинина в/к", "unit": "шт.", "w": 1.75, "tag": "", "pk": "изделие ~1,5–2 кг", "sshort": "до 35 сут.", "temp": "0…+6 °С"}, {"id": "p2", "name": "Карбонад копченый", "cat": "Свинина в/к", "unit": "шт.", "w": 1.1, "tag": "", "pk": "изделие ~1–1,2 кг", "sshort": "до 35 сут.", "temp": "0…+6 °С"}, {"id": "p3", "name": "Буженина свиная в фольге в/к", "cat": "Свинина в/к", "unit": "шт.", "w": 1.25, "tag": "", "pk": "изделие ~1–1,5 кг", "sshort": "до 20 сут.", "temp": "0…+6 °С"}, {"id": "p4", "name": "Закуска к столу с вялеными томатами к/в", "cat": "Свинина в/к", "unit": "шт.", "w": 1.1, "tag": "Новинка", "pk": "изделие ~1–1,2 кг", "sshort": "до 35 сут.", "temp": "0…+6 °С"}, {"id": "p5", "name": "Окорок Монте-Кристо в/к", "cat": "Свинина в/к", "unit": "шт.", "w": 3.5, "tag": "", "pk": "изделие ~3–4 кг", "sshort": "до 35 сут.", "temp": "0…+6 °С"}, {"id": "p6", "name": "Ребрышки свиные в/к", "cat": "Свинина в/к", "unit": "шт.", "w": 0.5, "tag": "", "pk": "изделие ~500 г", "sshort": "до 35 сут.", "temp": "0…+6 °С"}, {"id": "p7", "name": "Рулет Изысканный с сыром в/к", "cat": "Свинина в/к", "unit": "шт.", "w": 1.1, "tag": "", "pk": "изделие ~1–1,2 кг", "sshort": "до 35 сут.", "temp": "0…+6 °С"}, {"id": "p8", "name": "Рулька свиная в/к", "cat": "Свинина в/к", "unit": "шт.", "w": 0.8, "tag": "", "pk": "изделие ~800 г", "sshort": "до 35 сут.", "temp": "0…+6 °С"}, {"id": "p9", "name": "Рулет домашний с чесноком в/к", "cat": "Свинина в/к", "unit": "шт.", "w": 1.0, "tag": "", "pk": "изделие ~1 кг", "sshort": "до 35 сут.", "temp": "0…+6 °С"}, {"id": "p10", "name": "Рулет Меркадо в/к", "cat": "Свинина в/к", "unit": "шт.", "w": 1.0, "tag": "", "pk": "изделие ~1 кг", "sshort": "до 35 сут.", "temp": "0…+6 °С"}, {"id": "p11", "name": "Свинина по-Домашнему", "cat": "Свинина в/к", "unit": "шт.", "w": 1.0, "tag": "", "pk": "изделие ~1 кг", "sshort": "до 35 сут.", "temp": "0…+6 °С"}, {"id": "p12", "name": "Свинина Флорентино в/к", "cat": "Свинина в/к", "unit": "шт.", "w": 0.65, "tag": "", "pk": "изделие ~0,5–0,8 кг", "sshort": "до 35 сут.", "temp": "0…+6 °С"}, {"id": "p13", "name": "Шейка запеченная в/к", "cat": "Свинина в/к", "unit": "шт.", "w": 1.0, "tag": "", "pk": "изделие ~1 кг", "sshort": "до 35 сут.", "temp": "0…+6 °С"}, {"id": "p14", "name": "Свинина Уголек в/к", "cat": "Свинина в/к", "unit": "шт.", "w": 0.75, "tag": "", "pk": "изделие ~0,5–1 кг", "sshort": "до 35 сут.", "temp": "0…+6 °С"}, {"id": "p15", "name": "Хрящи свиные в/к", "cat": "Свинина в/к", "unit": "шт.", "w": 0.3, "tag": "", "pk": "изделие ~0,3 кг", "sshort": "до 35 сут.", "temp": "0…+6 °С"}, {"id": "p16", "name": "Шейка копченая в/к", "cat": "Свинина в/к", "unit": "шт.", "w": 2.0, "tag": "", "pk": "изделие ~2 кг", "sshort": "до 35 сут.", "temp": "0…+6 °С"}, {"id": "p17", "name": "Буженина куриная в/к", "cat": "Птица в/к", "unit": "шт.", "w": 1.0, "tag": "", "pk": "изделие ~1 кг", "sshort": "до 20 сут.", "temp": "0…+6 °С"}, {"id": "p18", "name": "Крыло куриное в/к", "cat": "Птица в/к", "unit": "шт.", "w": 1.0, "tag": "", "pk": "изделие ~1 кг", "sshort": "до 20 сут.", "temp": "0…+6 °С"}, {"id": "p19", "name": "Филе Индейки в/к", "cat": "Птица в/к", "unit": "шт.", "w": 2.0, "tag": "Новинка", "pk": "изделие ~2 кг", "sshort": "до 20 сут.", "temp": "0…+6 °С"}, {"id": "p20", "name": "Грудка куриная в/к", "cat": "Птица в/к", "unit": "шт.", "w": 1.0, "tag": "", "pk": "изделие ~1 кг", "sshort": "до 20 сут.", "temp": "0…+6 °С"}, {"id": "p21", "name": "Рулет куриный в/к", "cat": "Птица в/к", "unit": "шт.", "w": 1.1, "tag": "", "pk": "изделие ~1–1,2 кг", "sshort": "до 20 сут.", "temp": "0…+6 °С"}, {"id": "p32", "name": "Ушки классические", "cat": "Снеки", "unit": "уп.", "w": 0.08, "tag": "", "pk": "упаковка 80 г, 500 г", "sshort": "до 60 сут.", "temp": "0…+6 °С"}, {"id": "p33", "name": "Ушки с чесноком", "cat": "Снеки", "unit": "уп.", "w": 0.08, "tag": "", "pk": "упаковка 80 г, 500 г", "sshort": "до 60 сут.", "temp": "0…+6 °С"}, {"id": "p34", "name": "Колбаски сырокопченые «Астурийские» с/к", "cat": "Снеки", "unit": "уп.", "w": 0.09, "tag": "", "pk": "упаковка 90 г, 500 г", "sshort": "до 180 сут.", "temp": "0…+6 °С"}, {"id": "p35", "name": "Ушки с хреном", "cat": "Снеки", "unit": "уп.", "w": 0.08, "tag": "", "pk": "упаковка 80 г, 500 г", "sshort": "до 60 сут.", "temp": "0…+6 °С"}, {"id": "p36", "name": "Ушки острые", "cat": "Снеки", "unit": "уп.", "w": 0.08, "tag": "", "pk": "упаковка 80 г, 500 г", "sshort": "до 60 сут.", "temp": "0…+6 °С"}, {"id": "p37", "name": "Колбаски сырокопченые «Смачные» с/к", "cat": "Снеки", "unit": "уп.", "w": 0.09, "tag": "", "pk": "упаковка 90 г, 500 г", "sshort": "до 180 сут.", "temp": "0…+6 °С"}, {"id": "p38", "name": "Куриный ломтик со вкусом Хамон с/к", "cat": "Снеки", "unit": "уп.", "w": 0.08, "tag": "Новинка", "pk": "упаковка 80 г, 500 г", "sshort": "до 120 сут.", "temp": "0…+6 °С"}, {"id": "p39", "name": "Палочки мясные колбаски с/к", "cat": "Снеки", "unit": "уп.", "w": 0.08, "tag": "", "pk": "упаковка 80 г, 500 г, 1 кг", "sshort": "до 120 сут.", "temp": "0…+6 °С"}, {"id": "p40", "name": "Сыровяленые Ломтики из мяса птицы с/к", "cat": "Снеки", "unit": "уп.", "w": 0.08, "tag": "", "pk": "упаковка 80 г, 500 г", "sshort": "до 120 сут.", "temp": "0…+6 °С"}, {"id": "p41", "name": "Куриный ломтик со вкусом Кимчи с/к", "cat": "Снеки", "unit": "уп.", "w": 0.08, "tag": "Новинка", "pk": "упаковка 80 г, 500 г", "sshort": "до 120 сут.", "temp": "0…+6 °С"}, {"id": "p42", "name": "Поко салями колбаски с/к", "cat": "Снеки", "unit": "уп.", "w": 0.08, "tag": "", "pk": "упаковка 80 г, 500 г, 1 кг", "sshort": "до 180 сут.", "temp": "0…+6 °С"}, {"id": "p43", "name": "Огонек колбаски с/к", "cat": "Снеки", "unit": "уп.", "w": 0.08, "tag": "", "pk": "упаковка 80 г, 500 г, 1 кг", "sshort": "до 120 сут.", "temp": "0…+6 °С"}, {"id": "p44", "name": "Мясо птицы «по-Ковбойски» с/к", "cat": "Снеки", "unit": "уп.", "w": 0.08, "tag": "Новинка", "pk": "упаковка 80 г, 500 г", "sshort": "до 120 сут.", "temp": "0…+6 °С"}, {"id": "p45", "name": "Мясо птицы «по-Ковбойски» с/к", "cat": "Снеки", "unit": "уп.", "w": 0.04, "tag": "", "pk": "упаковка 40 г, 80 г, 500 г", "sshort": "до 120 сут.", "temp": "0…+6 °С"}, {"id": "p22", "name": "Свинина в форме в/к /Риет", "cat": "Паштет", "unit": "уп.", "w": 0.18, "tag": "Новинка", "pk": "упаковка 180 г", "sshort": "до 20 сут.", "temp": "0…+6 °С"}, {"id": "p94", "name": "Пельмени Вкусняшка", "cat": "Полуфабрикаты", "unit": "уп.", "w": 1.0, "tag": "Новинка", "pk": "упаковка 1 кг", "sshort": "до 120 сут.", "temp": "−18 °С"}, {"id": "p95", "name": "Пельмени Элитные", "cat": "Полуфабрикаты", "unit": "уп.", "w": 1.0, "tag": "Новинка", "pk": "упаковка 1 кг", "sshort": "до 120 сут.", "temp": "−18 °С"}, {"id": "p96", "name": "Вареники Картофель Лук", "cat": "Полуфабрикаты", "unit": "уп.", "w": 1.0, "tag": "Новинка", "pk": "упаковка 1 кг", "sshort": "до 120 сут.", "temp": "−18 °С"}, {"id": "p97", "name": "Крыло птицы «Баффоло» в маринаде в/у 2кг", "cat": "Полуфабрикаты", "unit": "уп.", "w": 1.5, "tag": "Новинка", "pk": "упаковка 1,5 кг", "sshort": "до 15 сут.", "temp": "0…+6 °С"}, {"id": "p98", "name": "Шашлык «Кавказский» в/у 2кг", "cat": "Полуфабрикаты", "unit": "уп.", "w": 1.5, "tag": "Новинка", "pk": "упаковка 1,5 кг", "sshort": "до 15 сут.", "temp": "0…+6 °С"}, {"id": "p99", "name": "Бедро птицы в маринаде в/у 2кг", "cat": "Полуфабрикаты", "unit": "уп.", "w": 1.5, "tag": "Новинка", "pk": "упаковка 1,5 кг", "sshort": "до 15 сут.", "temp": "0…+6 °С"}, {"id": "p100", "name": "Тушка птицы ароматная в маринаде в/у 2кг", "cat": "Полуфабрикаты", "unit": "уп.", "w": 1.5, "tag": "Новинка", "pk": "упаковка 1,5 кг", "sshort": "до 15 сут.", "temp": "0…+6 °С"}, {"id": "p101", "name": "Шашлык «Классический» шея в/у 2кг", "cat": "Полуфабрикаты", "unit": "уп.", "w": 1.5, "tag": "Новинка", "pk": "упаковка 1,5 кг", "sshort": "до 15 сут.", "temp": "0…+6 °С"}, {"id": "p102", "name": "Колбаски Курвурст", "cat": "Для жарки", "unit": "уп.", "w": 1.0, "tag": "", "pk": "упаковка 1 кг", "sshort": "до 90 сут.", "temp": "−18 °С"}, {"id": "p103", "name": "Колбаски Мюнхенские", "cat": "Для жарки", "unit": "уп.", "w": 1.0, "tag": "", "pk": "упаковка 1 кг", "sshort": "до 90 сут.", "temp": "−18 °С"}, {"id": "p104", "name": "Колбаски Тюрингские", "cat": "Для жарки", "unit": "уп.", "w": 1.0, "tag": "", "pk": "упаковка 1 кг", "sshort": "до 90 сут.", "temp": "−18 °С"}, {"id": "p105", "name": "Колбаски Люблинские", "cat": "Для жарки", "unit": "уп.", "w": 1.0, "tag": "", "pk": "упаковка 1 кг", "sshort": "до 90 сут.", "temp": "−18 °С"}, {"id": "p106", "name": "Колбаски Нюнбергские", "cat": "Для жарки", "unit": "уп.", "w": 1.0, "tag": "", "pk": "упаковка 1 кг", "sshort": "до 90 сут.", "temp": "−18 °С"}, {"id": "p107", "name": "Колбаски Французкий", "cat": "Для жарки", "unit": "уп.", "w": 1.0, "tag": "", "pk": "упаковка 1 кг", "sshort": "до 90 сут.", "temp": "−18 °С"}];
+var IMG={"p65": "../img/p65.jpg", "p67": "../img/p67.jpg", "p68": "../img/p68.jpg", "p69": "../img/p69.jpg", "p70": "../img/p70.jpg", "p71": "../img/p71.jpg", "p72": "../img/p72.jpg", "p73": "../img/p73.jpg", "p74": "../img/p74.jpg", "p75": "../img/p75.jpg", "p76": "../img/p76.jpg", "p77": "../img/p77.jpg", "p78": "../img/p78.jpg", "p79": "../img/p79.jpg", "p80": "../img/p80.jpg", "p87": "../img/p87.jpg", "p88": "../img/p88.jpg", "p89": "../img/p89.jpg", "p90": "../img/p90.jpg", "p91": "../img/p91.jpg", "p92": "../img/p92.jpg", "p93": "../img/p93.jpg", "p81": "../img/p81.jpg", "p82": "../img/p82.jpg", "p83": "../img/p83.jpg", "p84": "../img/p84.jpg", "p85": "../img/p85.jpg", "p86": "../img/p86.jpg", "p46": "../img/p46.jpg", "p47": "../img/p47.jpg", "p48": "../img/p48.jpg", "p49": "../img/p49.jpg", "p50": "../img/p50.jpg", "p51": "../img/p51.jpg", "p52": "../img/p52.jpg", "p53": "../img/p53.jpg", "p54": "../img/p54.jpg", "p55": "../img/p55.jpg", "p56": "../img/p56.jpg", "p57": "../img/p57.jpg", "p58": "../img/p58.jpg", "p59": "../img/p59.jpg", "p60": "../img/p60.jpg", "p61": "../img/p61.jpg", "p62": "../img/p62.jpg", "p63": "../img/p63.jpg", "p64": "../img/p64.jpg", "p66": "../img/p66.jpg", "p23": "../img/p23.jpg", "p24": "../img/p24.jpg", "p25": "../img/p25.jpg", "p26": "../img/p26.jpg", "p27": "../img/p27.jpg", "p28": "../img/p28.jpg", "p29": "../img/p29.jpg", "p30": "../img/p30.jpg", "p31": "../img/p31.jpg", "p0": "../img/p0.jpg", "p1": "../img/p1.jpg", "p2": "../img/p2.jpg", "p3": "../img/p3.jpg", "p4": "../img/p4.jpg", "p5": "../img/p5.jpg", "p6": "../img/p6.jpg", "p7": "../img/p7.jpg", "p8": "../img/p8.jpg", "p9": "../img/p9.jpg", "p10": "../img/p10.jpg", "p11": "../img/p11.jpg", "p12": "../img/p12.jpg", "p13": "../img/p13.jpg", "p14": "../img/p14.jpg", "p15": "../img/p15.jpg", "p16": "../img/p16.jpg", "p17": "../img/p17.jpg", "p18": "../img/p18.jpg", "p19": "../img/p19.jpg", "p20": "../img/p20.jpg", "p21": "../img/p21.jpg", "p32": "../img/p32.jpg", "p33": "../img/p33.jpg", "p34": "../img/p34.jpg", "p35": "../img/p35.jpg", "p36": "../img/p36.jpg", "p37": "../img/p37.jpg", "p38": "../img/p38.jpg", "p39": "../img/p39.jpg", "p40": "../img/p40.jpg", "p41": "../img/p41.jpg", "p42": "../img/p42.jpg", "p43": "../img/p43.jpg", "p44": "../img/p44.jpg", "p45": "../img/p45.jpg", "p22": "../img/p22.jpg", "p94": "../img/p94.jpg", "p95": "../img/p95.jpg", "p96": "../img/p96.jpg", "p97": "../img/p97.jpg", "p98": "../img/p98.jpg", "p99": "../img/p99.jpg", "p100": "../img/p100.jpg", "p101": "../img/p101.jpg", "p102": "../img/p102.jpg", "p103": "../img/p103.jpg", "p104": "../img/p104.jpg", "p105": "../img/p105.jpg", "p106": "../img/p106.jpg", "p107": "../img/p107.jpg"};
+var PRICE_BOX={"s": "Ub1Y/5j/l/SSrOERmDM4hw==", "i": "SZU+5yrCuSAEtskh", "c": "M76bdCDgYeH6+TUWMxwpV9Go9ZWfuR1xpM0JPrlsqpfaZDjRZlbpnvQWFww04K+L/3txuxDzcFFqwzzEOaL3A+3iP51Oz6YKDYu4irywCLev4EiCXXdhUKJmzxEjEerBTTNTgK66iJpBWdyzVOuIzmlQMr3PGz0tKAFjkneb8CU2kMxlBXVhO3LIb/huqv32q17Qvep6HZdc6XObJZ/bcXFa4GHXGTOQm1zSiYhs1ZI5fDxIeuzg8pF95knlDtRK74fZCQC0K4hoHBK8E3RdyaObKyWHD+NLKR3KwbiUVTzRwfJXt17U/hh65x91WCYfjZEb2JUjjbVOuLnLS+uwN3r9iEx2608S6R7VvsaMGYPkB7gqlwTxsppNw9Iy6DGVsfGVuxDS53DACEAdH3GPpJWy+txVoqhlpQWz2qx5eIqpRfa625VUxiX8naW4pXcyBD4A5fxNf0A66ybcmoTzEP9nYYxDXDxzrpPB5bkbZr0Q6T1o5JW0PG1a3HAapOjBQK9KST2VY0zDRnqBiyfWkwF34Em9a1CPVMd7Lb4HVAgwPLC++naux75cF02Gv7ojlVZmVtTs9cHxM+XnbmTc70WQ7+Oxi8hAsZbM8TuBp0DMu0y7Qqhj1R15Hjt49kZu4VwYmCIiPcZhOXKpFc2Js44DiiHXDtQH4gDonrwRKpZIs0v5W8sqeQC5v58+5yT4SY4AUs3DZDjnmMM4cl9Iu4kOGHWWB7qrXS6RkHtAMM6xPeMzmkeuDCh1FfOGQJayU8EqJSh5A/ZqM9pzaLiy/GtWrM2NxHgHPfCHXqoUDN67YoEDQwB191K5XI7mC6f4SBoA4I7CpL629p7hzzI2voeppVWDLBLCMMotSvikv744bbhMhZCwoRGCbcrOy+Ov1zCzovTU3LeMS+AGFxQktk+a5b+cIbGACrMnutaxgin4Uw79/RaQEmlW5WKvwltLrQt0PYrP9U4/GMGEZ7oLs67dhkTNQBbjTC8XlpPfrqibywaU4YfstzNfJowxROzcztR8myude7rxPdjPhv8123BzMJnFXTeBj/hK27CfKLoA4u1vrj+hhDXhjmHk8LMyzd8uTWSKtLuNDr5vJ7ANjHjjaU3dntHN9cn26kVmvGJbK942ELIGy3GTd8uPCyYSLbvOMbeNzm1QYmZXCu59ZPBKDmQ20mX05SnO8/EmBpMhl9S8q/+N2zqid3Kr/rmEZOdglS3CVSfkd47TpHJ/YfqMq1v7HAfQ7lfXXVYBSPALmXbRSYvs7WYOCRK3v4Ume3CfKBHMDgiX6Tt0xDRblOEYrQ2B1gP3ZjfW6Wm2xxoacCmwGx8Nzm69WVbzy6tuEqU41PtG42xKj2BDvZ7lyLWPC8b8MtyYrur+cSzikPeaCbxbnVdl+luq7JoIaV/YKC0Ekn9GPjFqzcQ/w7D++TntZGwgVbXI+PEbpxKkW3QrDes0ZBikvofmgKUG7Vd9PSo3227bwBQsW2KjBQsf7xDFVO6+SRvVEZ3lLLH8z1aIgB8S9KjQkYNMoFTK7PDKgdwfmuw8PX/msFy6AQHnSY5flz8xAqvmMsNhsiof1aX5p+6IafUbZITwheAO2mMNdOoiUzRdArXz9hqBQBog7zd8WA6tDmLd0BEjo2kL+AbZuWs9uN3HFRUygzLxsAfjhwN8eKR4xE2ISBZDuh9B8M7jUunYhA4IPSM/HrEPNdk5uubX/gBtWmCXG/G0CYpE5S5XSzG14ougdqJxF467axnvpkSsoE5vIFF50GV9wz0oRhPp1IRzWegi9+pO47NTJjCiK0LmEKifcmi20kuw2C6QWwCsML4zkcg8OeLrVCIUdKSN7GBhachDfoZaSbXrIu81ynCCr2nMDoZAUxaKryaF3qs4OqiYQxDH52oHaRYz0ovTwty73fXlotHZ0+ggYff+0k8fzfa/xnkuzPBb6R8cPaP8HsXpFYLQDs5wQ9Ybrdm8qnCOaDy66pkBakKhqNxOe1Y8HgTUro7Exrkq36OCMogoDj22hKvJOUUoTVUmNFI9HnZLdFUD+Nw2EkrU5PydqeY04bOhMzJoCWOrA0JvVIFTwLJIx/ffqED/kELHAuk27yluzZtpNXpnpCSNKwnfQD5BLYOTRlcCp6JSs33H5bU0jeKdvQ5OutGuuSEqsGeH6siU1mmQA4u44rp2ot4dRQtjvIfu2lDfb8NTiraucGh7evaqtQf6tJKXyNcJw9Hkc4yTfkV/1oCEkD4y5EtbfNu0aIqeXdSR8OiRMpuvFcZHkKv53a6bs3hrYXOIJ9ofoD6KEDBzkiICW4XhgYK1A//snI/dz9Hyi4x272eHp5OPP9dau7lI/bKM59Er3sUyy2C82IMX/wxgNDHx2MRlUrjrrYn1FsNsNKBjbS456VzOBIktmneGYYPDwjTNqdjeYa+se+i457JaVXYvTUwCMw900DM6"};
+var LS='ferm-manager-v1',KEYLS='ferm-manager-key',CUTOFF=16;
+var DOW=['вс','пн','вт','ср','чт','пт','сб'],MON=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+var BY={};P.forEach(function(p){BY[p.id]=p});
+var CATS=['Всё'];P.forEach(function(p){if(CATS.indexOf(p.cat)<0)CATS.push(p.cat)});
+
+/* ---------- helpers ---------- */
+function $(id){return document.getElementById(id)}
+function ini(n){var m=String(n).match(/«\s*([^»\s])/);return (m?m[1]:String(n).charAt(0)).toUpperCase()}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function rub(n){return Math.round(n).toLocaleString('ru-RU')+' ₽'}
+function kg(n){return (Math.round(n*10)/10).toLocaleString('ru-RU',{maximumFractionDigits:1})}
+function plural(n,a,b,c){n=Math.abs(n)%100;var m=n%10;if(n>10&&n<20)return c;if(m>1&&m<5)return b;if(m==1)return a;return c}
+function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function addDays(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x}
+function dateOf(s){var p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2])}
+function dayLabel(s){var d=dateOf(s);return DOW[d.getDay()]+', '+d.getDate()+' '+MON[d.getMonth()]}
+var toastT;function toast(m){var t=$('toast');t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(function(){t.hidden=true},2300)}
+function newKey(){var a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',u=new Uint32Array(12),s='';crypto.getRandomValues(u);for(var i=0;i<12;i++){s+=a[u[i]%a.length];if(i===3||i===7)s+='-'}return 'FRM-'+s}
+function copy(text,msg){if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(function(){toast(msg)},function(){toast('Не удалось скопировать — выделите текст вручную')});else toast('Копирование недоступно')}
+function deliveryDates(){var now=new Date(),i=now.getHours()<CUTOFF?1:2,out=[];while(out.length<4&&i<12){var d=addDays(now,i);if(d.getDay()!==0)out.push(iso(d));i++}return out}
+
+/* ---------- prices ---------- */
+function b64u8(s){var b=atob(s),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u}
+function unlock(key){
+  if(!(window.crypto&&crypto.subtle))return Promise.reject(new Error('nocrypto'));
+  return crypto.subtle.importKey('raw',new TextEncoder().encode(String(key).trim().toUpperCase()),'PBKDF2',false,['deriveKey']).then(function(base){
+    return crypto.subtle.deriveKey({name:'PBKDF2',salt:b64u8(PRICE_BOX.s),iterations:200000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt'])
+  }).then(function(k){return crypto.subtle.decrypt({name:'AES-GCM',iv:b64u8(PRICE_BOX.i)},k,b64u8(PRICE_BOX.c))
+  }).then(function(buf){var m=JSON.parse(new TextDecoder().decode(buf));P.forEach(function(p){var v=m[p.id];if(v){p.pp=v[0];p.pkg=v[1];p.ppx=!!v[2]}})});
+}
+function catOf(c){for(var i=0;i<S.cats.length;i++)if(S.cats[i].id===(c&&c.cat))return S.cats[i];return S.cats[0]}
+function pct(cat,p){var o=cat.over&&cat.over[p.cat];return (o!=null&&o!==''?+o:+cat.pct)||0}
+/* price for one unit of a product for a client's category, honouring the chosen pack weight */
+function unitPrice(p,cat,w){if(!p.pp)return 0;var k=1+pct(cat,p)/100;w=w||p.w;
+  if(p.ppx&&Math.abs(w-p.w)<1e-6)return Math.round(p.pp*k);
+  var perKg=p.pkg||(p.pp/p.w);return Math.round(perKg*w*k)}
+function kgPrice(p,cat){var perKg=p.pkg||(p.pp?p.pp/p.w:0);return perKg?Math.round(perKg*(1+pct(cat,p)/100)):0}
+
+/* ---------- product characteristics ---------- */
+function packs(p){var m=String(p.pk).match(/[\d,]+\s*(?:кг|г)/g)||[];return m.map(function(x){var v=parseFloat(x.replace(',','.'));return {t:x.replace(/\s+/,' '),w:/кг/.test(x)?v:v/1000}})}
+function optionsFor(p){
+  var o=[],c=p.cat,n=p.name;
+  if(c==='Сосиски')o.push({k:'len',t:'Длина',v:['Стандартная','Под хот-дог 16 см','Под хот-дог 20 см']});
+  if(c==='Сосиски'||c==='Сардельки')o.push({k:'pack',t:'Упаковка',v:['Вакуум','МГС (газ)','Весовые']});
+  if(c==='Вареные колбасы'||c==='Ветчина'||c==='Копчёные колбасы'||c==='Сырокопчёные'){o.push({k:'form',t:'Вид',v:['Целым батоном','Половинками','Нарезка в/у']});o.push({k:'pack',t:'Упаковка',v:['Без вакуума','В вакууме']})}
+  if(c==='Свинина в/к'||c==='Птица в/к'){o.push({k:'form',t:'Вид',v:['Целым изделием','Порционная нарезка в/у']});o.push({k:'pack',t:'Упаковка',v:['В вакууме','В пергаменте']})}
+  if(c==='Снеки'){var ps=packs(p);if(ps.length>1)o.push({k:'size',t:'Фасовка',v:ps.map(function(x){return x.t}),w:ps.map(function(x){return x.w})})}
+  if(c==='Для жарки')o.push({k:'pack',t:'Упаковка',v:['Вакуум','Весовые']});
+  return o;
+}
+function lineW(l){var p=BY[l.id],o=optionsFor(p).filter(function(x){return x.k==='size'})[0];if(o&&l.opt.size){var i=o.v.indexOf(l.opt.size);if(i>=0)return o.w[i]}return p.w}
+function optText(l){var p=BY[l.id];return optionsFor(p).map(function(o){return l.opt[o.k]}).filter(Boolean).concat(l.note?['«'+l.note+'»']:[])}
+
+/* ---------- demo data ---------- */
+function seed(){
+  var cats=[{id:'base',name:'Базовая',pct:0,over:{},note:'Цены по прайс-листу'},{id:'opt',name:'Опт',pct:-5,over:{},note:'От 30 кг в заказ'},{id:'net',name:'Сети',pct:-8,over:{'Снеки':-3},note:'Сетевые магазины'},{id:'horeca',name:'HoReCa',pct:3,over:{'Полуфабрикаты':0,'Для жарки':0},note:'Кафе и рестораны'},{id:'soc',name:'Соцзаказ',pct:-10,over:{},note:'Школы и сады, по договору'}];
+  var C=[['Магазин «Пример»','ИП Сидорова А. В.','opt','магазин','ул. Мира, 12','7:00–11:00','Анна','+7 900 000-00-01'],['Кафе «Обед»','ООО «Обед»','horeca','кафе','пр. Ленина, 40','9:00–12:00','Игорь','+7 900 000-00-02'],
+    ['Столовая школы №7','МБОУ СОШ №7','soc','школа / сад','ул. Школьная, 7','7:00–8:30','Татьяна','+7 900 000-00-03'],['Магазин «Продукты у дома»','ИП Козлов','net','магазин','ул. Победы, 21','7:00–10:00','Сергей','+7 900 000-00-04'],
+    ['Пиццерия «Тесто»','ООО «Тесто»','horeca','кафе','ул. Мира, 120','10:00–12:00','Марат','+7 900 000-00-05'],['Магазин «Мясной ряд»','ИП Петрова','base','магазин','рынок, павильон 4','6:30–9:00','Ольга','+7 900 000-00-06']];
+  var clients=C.map(function(c,i){return {id:'k'+(i+1),name:c[0],legal:c[1],cat:c[2],type:c[3],addr:c[4],win:c[5],contact:c[6],phone:c[7],inn:'',days:'пн–сб',pay:'отсрочка 7 дней',docs:'ЭДО',volume:'',hotdog:c[3]==='кафе'?'да':'',notes:'',key:i<4?newKey():'',created:Date.now()-i*864e5}});
+  return {v:1,cats:cats,clients:clients,orders:[],num:2001};
+}
+var S,M={tab:'order',client:null,date:null,cart:[],cat:'Всё',q:'',comment:''};
+function load(){try{var r=localStorage.getItem(LS);if(r){S=JSON.parse(r);if(S&&S.v===1)return}}catch(e){}S=seed()}
+function save(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}}
+function client(id){for(var i=0;i<S.clients.length;i++)if(S.clients[i].id===id)return S.clients[i];return null}
+function cartSum(){var c=client(M.client),cat=catOf(c);return M.cart.reduce(function(s,l){return s+l.q*unitPrice(BY[l.id],cat,lineW(l))},0)}
+function cartKg(){return M.cart.reduce(function(s,l){return s+l.q*lineW(l)},0)}
+
+/* ---------- views ---------- */
+function vOrder(){
+  var c=client(M.client),h='<div class="eyebrow">Новая заявка</div><h1 class="t">'+(c?esc(c.name):'Для кого заявка?')+'</h1>';
+  if(!c){
+    h+='<p class="hint">Выберите клиента. Новые клиенты добавляются во вкладке «Клиенты».</p><div class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5F5954" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="cq" type="search" placeholder="Название, адрес, телефон" value="'+esc(M.cq||'')+'" aria-label="Поиск клиента"></div>';
+    var list=S.clients.filter(function(x){var q=(M.cq||'').toLowerCase();return !q||(x.name+' '+x.addr+' '+x.phone+' '+x.legal).toLowerCase().indexOf(q)>=0});
+    h+=list.map(function(x){var ct=catOf(x);return '<button class="pick" data-client="'+x.id+'"><span class="ic">'+esc(ini(x.name))+'</span><span class="grow" style="flex:1;min-width:0"><b>'+esc(x.name)+'</b><span>'+esc(x.addr)+' · '+esc(x.win)+'</span></span><span class="cat-badge">'+esc(ct.name)+'</span></button>'}).join('')||'<div class="empty">Не нашли — добавьте клиента во вкладке «Клиенты».</div>';
+    return h;
+  }
+  var ct=catOf(c),dd=deliveryDates();if(!M.date||dd.indexOf(M.date)<0)M.date=dd[0];
+  h+='<div class="card"><div class="row"><div class="grow"><b>'+esc(c.addr)+'</b><div class="hint">приёмка '+esc(c.win)+' · '+esc(c.contact)+' '+esc(c.phone)+'</div></div><span class="cat-badge">'+esc(ct.name)+(ct.pct?' '+(ct.pct>0?'+':'')+ct.pct+'%':'')+'</span></div>'+
+    '<div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn sm" data-act="changeClient">Другой клиент</button>'+(S.orders.some(function(o){return o.client===c.id})?'<button class="btn sm" data-act="repeat">Повторить прошлую</button>':'')+'</div></div>';
+  h+='<div class="eyebrow">Доставка</div><div class="dates">'+dd.slice(0,3).map(function(d){var x=dateOf(d),diff=Math.round((x-dateOf(iso(new Date())))/864e5);return '<button class="date'+(M.date===d?' on':'')+'" data-date="'+d+'"><b>'+(diff===1?'Завтра':diff===2?'Послезавтра':DOW[x.getDay()])+'</b><span>'+x.getDate()+' '+MON[x.getMonth()].slice(0,3)+'</span></button>'}).join('')+'</div>';
+  if(new Date().getHours()>=CUTOFF)h+='<p class="hint">Приём на завтра закрыт в '+CUTOFF+':00 — ближайшая доставка послезавтра.</p>';
+  h+='<div class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5F5954" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="pq" type="search" placeholder="Поиск товара" value="'+esc(M.q)+'" aria-label="Поиск товара"></div>';
+  h+='<div class="chips">'+CATS.map(function(x){return '<button class="chip'+(M.cat===x?' on':'')+'" data-cat="'+esc(x)+'">'+esc(x)+'</button>'}).join('')+'</div>';
+  var list2=P.filter(function(p){return (M.cat==='Всё'||p.cat===M.cat)&&(!M.q||p.name.toLowerCase().indexOf(M.q.toLowerCase())>=0)});
+  h+='<div class="plist">'+list2.map(function(p){var inq=M.cart.filter(function(l){return l.id===p.id}).reduce(function(s,l){return s+l.q},0),pr=unitPrice(p,ct);
+    return '<button class="prod" data-prod="'+p.id+'"><img src="'+IMG[p.id]+'" alt="" loading="lazy"><span class="mid"><b>'+esc(p.name)+'</b><span>'+esc(p.pk)+(optionsFor(p).length?' · есть варианты':'')+'</span></span><span class="pr">'+(pr?'<b class="num">'+(p.ppx?'':'≈ ')+rub(pr)+'</b><span>за '+p.unit+'</span>':'<span>цена по запросу</span>')+'</span>'+(inq?'<span class="q">'+inq+'</span>':'<span class="add" aria-hidden="true">+</span>')+'</button>'}).join('')+'</div>';
+  return h;
+}
+function vCart(){
+  var c=client(M.client);if(!c){M.tab='order';return vOrder()}
+  var ct=catOf(c),h='<div class="eyebrow">Корзина · '+esc(c.name)+'</div><h1 class="t">Заявка на '+dayLabel(M.date)+'</h1>';
+  if(!M.cart.length)return h+'<div class="empty">Корзина пустая. <button class="btn sm" data-tab="order" style="margin-top:10px">К товарам</button></div>';
+  h+='<div class="card">'+M.cart.map(function(l,i){var p=BY[l.id],up=unitPrice(p,ct,lineW(l)),ot=optText(l);
+    return '<div class="line"><img src="'+IMG[p.id]+'" alt=""><div class="mid"><b>'+esc(p.name)+'</b><span class="num">'+(up?(p.ppx?'':'≈ ')+rub(up)+' / '+p.unit+' · ':'')+'≈ '+kg(l.q*lineW(l))+' кг'+(up?' · <b>'+rub(up*l.q)+'</b>':'')+'</span>'+(ot.length?'<div class="opt">'+ot.map(function(x){return '<i>'+esc(x)+'</i>'}).join('')+'</div>':'')+
+    '<div class="row" style="margin-top:6px;gap:6px"><button class="btn sm" data-edit="'+i+'" style="height:30px;padding:0 10px;font-size:12px">Изменить</button></div></div>'+
+    '<div class="step"><button data-dec="'+i+'" aria-label="Меньше">−</button><b class="num">'+l.q+'</b><button data-inc="'+i+'" aria-label="Больше">+</button></div></div>'}).join('')+'</div>';
+  h+='<label class="f" for="ocomment">Комментарий к заявке<textarea class="in" id="ocomment" rows="2" placeholder="Например: позвонить за 30 минут, въезд со двора">'+esc(M.comment)+'</textarea></label>';
+  h+='<div class="card"><div class="totals"><span class="hint">Итого для «'+esc(ct.name)+'», примерно<br>вес ≈ '+kg(cartKg())+' кг</span><b class="num">'+rub(cartSum())+'</b></div><p class="hint">Точная сумма — после взвешивания на складе.</p><button class="btn main wide" data-act="place">Оформить заявку</button></div>';
+  return h;
+}
+function vOrders(){
+  var h='<div class="eyebrow">Оформленные менеджером</div><h1 class="t">Заявки</h1>';
+  if(!S.orders.length)return h+'<div class="empty">Пока заявок нет. Оформите первую во вкладке «Заявка».</div>';
+  h+=S.orders.slice().sort(function(a,b){return b.num-a.num}).map(function(o){var c=client(o.client)||{name:'—',addr:''};
+    return '<div class="card"><div class="row"><div class="grow"><b>№ '+o.num+' · '+esc(c.name)+'</b><div class="hint">'+dayLabel(o.date)+' · '+o.lines.length+' '+plural(o.lines.length,'позиция','позиции','позиций')+' · ≈ '+kg(o.kg)+' кг</div></div><span class="st s'+(o.status||0)+'">'+(o.status===1?'Передана в офис':'Принята')+'</span></div>'+
+    '<div class="row" style="justify-content:space-between"><b class="num" style="font-family:var(--f-display);font-weight:400;font-size:22px">'+rub(o.sum)+'</b><div class="row" style="gap:6px"><button class="btn sm" data-copyo="'+o.num+'">Скопировать</button><button class="btn sm" data-repeato="'+o.num+'">Повторить</button></div></div></div>'}).join('');
+  return h+'<p class="hint">В тестовой версии заявки хранятся в телефоне менеджера. После подключения сервера они будут сразу попадать в офисную панель и план.</p>';
+}
+function vClients(){
+  var h='<div class="row"><div class="grow"><div class="eyebrow">Карты клиентов · '+S.clients.length+'</div><h1 class="t">Клиенты</h1></div><button class="btn main sm" data-act="newClient">+ Клиент</button></div>';
+  h+='<div class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5F5954" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="kq" type="search" placeholder="Поиск клиента" value="'+esc(M.kq||'')+'" aria-label="Поиск клиента"></div>';
+  h+=S.clients.filter(function(x){var q=(M.kq||'').toLowerCase();return !q||(x.name+' '+x.addr+' '+x.phone+' '+x.legal).toLowerCase().indexOf(q)>=0}).map(function(x){var ct=catOf(x);
+    return '<button class="pick" data-card="'+x.id+'"><span class="ic">'+esc(ini(x.name))+'</span><span style="flex:1;min-width:0"><b>'+esc(x.name)+'</b><span>'+esc(x.type)+' · '+esc(x.addr)+'</span><span style="display:block;margin-top:3px">'+(x.key?'ключ выдан':'ключ не выдан')+'</span></span><span class="cat-badge">'+esc(ct.name)+'</span></button>'}).join('');
+  return h;
+}
+function vPrices(){
+  var h='<div class="row"><div class="grow"><div class="eyebrow">Ценовые категории</div><h1 class="t">Цены</h1></div><button class="btn main sm" data-act="newCat">+ Категория</button></div><p class="hint">Категория — это скидка или наценка к прайс-листу. Можно задать свой процент для отдельных групп товаров. Категория назначается клиенту в его карте.</p>';
+  h+=S.cats.map(function(ct){var n=S.clients.filter(function(c){return c.cat===ct.id}).length,ov=Object.keys(ct.over||{}).filter(function(k){return ct.over[k]!==''&&ct.over[k]!=null});
+    return '<button class="pick" data-cated="'+ct.id+'"><span class="ic" style="background:var(--surface);color:var(--ink);font-size:13px">'+(ct.pct>0?'+':'')+ct.pct+'%</span><span style="flex:1;min-width:0"><b>'+esc(ct.name)+'</b><span>'+esc(ct.note||'')+(ov.length?' · особые: '+ov.map(function(k){return k+' '+(ct.over[k]>0?'+':'')+ct.over[k]+'%'}).join(', '):'')+'</span></span><span class="cat-badge">'+n+' '+plural(n,'клиент','клиента','клиентов')+'</span></button>'}).join('');
+  return h;
+}
+function render(){
+  var v=$('view'),y=window.scrollY,old=v.querySelector('.chips'),cx=old?old.scrollLeft:0;
+  v.innerHTML=M.tab==='order'?vOrder():M.tab==='cart'?vCart():M.tab==='orders'?vOrders():M.tab==='clients'?vClients():vPrices();
+  var ch=v.querySelector('.chips');if(ch)ch.scrollLeft=cx;
+  document.querySelectorAll('nav.tabs button').forEach(function(b){b.classList.toggle('on',b.dataset.tab===M.tab||(M.tab==='cart'&&b.dataset.tab==='order'))});
+  var n=M.cart.length;$('cartbar').hidden=!(n&&M.tab==='order');$('cbN').textContent=n+' '+plural(n,'позиция','позиции','позиций')+' · ≈ '+kg(cartKg())+' кг';$('cbS').textContent='≈ '+rub(cartSum());
+  window.scrollTo(0,y);
+}
+function go(t){M.tab=t;render();window.scrollTo(0,0)}
+
+/* ---------- sheets ---------- */
+function sheet(html){$('overlay').innerHTML='<div class="scrim" data-scrim="1"><div class="sheet" role="dialog" aria-modal="true">'+html+'</div></div>'}
+function closeSheet(){$('overlay').innerHTML='';SH=null}
+var SH=null;
+function productSheet(){
+  var p=BY[SH.id],c=client(M.client),ct=catOf(c),opts=optionsFor(p),l=SH,w=lineW(l),up=unitPrice(p,ct,w);
+  var h='<div class="hd"><div class="ph"><img src="'+IMG[p.id]+'" alt=""><div><div class="eyebrow">'+esc(p.cat)+'</div><h2>'+esc(p.name)+'</h2></div></div><button class="x" data-close="1" aria-label="Закрыть">✕</button></div>';
+  h+='<div class="card"><div class="totals"><span class="hint">'+esc(p.pk)+' · '+esc(p.sshort)+' · '+esc(p.temp)+'<br>Категория «'+esc(ct.name)+'»'+(kgPrice(p,ct)?' · '+rub(kgPrice(p,ct))+' за кг':'')+'</span><b class="num">'+(up?(p.ppx&&Math.abs(w-p.w)<1e-6?'':'≈ ')+rub(up):'—')+'</b></div></div>';
+  opts.forEach(function(o){h+='<div class="eyebrow">'+o.t+'</div><div class="seg">'+o.v.map(function(v){return '<button class="opt-b'+(l.opt[o.k]===v?' on':'')+'" data-opt="'+o.k+'" data-val="'+esc(v)+'">'+esc(v)+'</button>'}).join('')+'</div>'});
+  h+='<label class="f" for="lnote">Пожелание по позиции <small>необязательно</small><input class="in" id="lnote" value="'+esc(l.note||'')+'" placeholder="Например: батоны не больше 1 кг"></label>';
+  h+='<div class="row"><div class="step" style="height:50px"><button data-sq="-1" aria-label="Меньше" style="height:50px;width:46px">−</button><b class="num" style="min-width:60px">'+l.q+' '+p.unit+'</b><button data-sq="1" aria-label="Больше" style="height:50px;width:46px">+</button></div><button class="btn main" data-act="addLine" style="flex:1">'+(SH.edit!=null?'Сохранить':'В корзину')+(up?' · '+rub(up*l.q):'')+'</button></div>';
+  if(SH.edit!=null)h+='<button class="btn wide" data-act="delLine">Убрать из корзины</button>';
+  return h;
+}
+var QFIELDS=[
+ ['name','Название точки','Магазин «…»',1],['legal','Юрлицо / ИП','ООО «…» или ИП Фамилия',0],['inn','ИНН','',0],
+ ['type','Тип клиента','',0,['магазин','сеть','кафе','ресторан','столовая','школа / сад','другое']],
+ ['addr','Адрес доставки','ул. …, дом',1],['win','Окно приёмки','8:00–11:00',0],['days','Дни доставки','пн–сб',0],
+ ['contact','Контактное лицо','Имя',1],['phone','Телефон','+7 …',1],
+ ['volume','Объём в неделю, кг','примерно',0],['pay','Оплата','',0,['предоплата','по факту','отсрочка 7 дней','отсрочка 14 дней','отсрочка 30 дней']],
+ ['docs','Документы','',0,['ЭДО','бумажные','ЭДО + бумажные']],['hotdog','Берут под хот-доги?','',0,['','да','нет']],
+ ['notes','Особенности','длина сосисок, нарезка, упаковка, въезд, кто принимает…',0]
+];
+function clientSheet(){
+  var x=SH.data,isNew=!SH.id,h='<div class="hd"><div><div class="eyebrow">'+(isNew?'Опросный лист':'Карта клиента')+'</div><h2>'+(isNew?'Новый клиент':esc(x.name))+'</h2></div><button class="x" data-close="1" aria-label="Закрыть">✕</button></div>';
+  h+='<div class="card grid2">'+QFIELDS.map(function(f){var full=['name','legal','addr','notes'].indexOf(f[0])>=0?' full':'',val=x[f[0]]||'';
+    if(f[4])return '<label class="f'+full+'">'+f[1]+'<select class="in" data-q="'+f[0]+'">'+f[4].map(function(o){return '<option'+(o===val?' selected':'')+' value="'+esc(o)+'">'+(o||'—')+'</option>'}).join('')+'</select></label>';
+    if(f[0]==='notes')return '<label class="f full">'+f[1]+'<textarea class="in" data-q="notes" placeholder="'+esc(f[2])+'">'+esc(val)+'</textarea></label>';
+    return '<label class="f'+full+'">'+f[1]+(f[3]?' *':'')+'<input class="in" data-q="'+f[0]+'" value="'+esc(val)+'" placeholder="'+esc(f[2])+'"'+(f[0]==='phone'?' inputmode="tel"':f[0]==='inn'||f[0]==='volume'?' inputmode="numeric"':'')+'></label>'}).join('')+'</div>';
+  h+='<div class="eyebrow">Категория цен</div><div class="seg">'+S.cats.map(function(ct){return '<button class="opt-b'+(x.cat===ct.id?' on':'')+'" data-setcat="'+ct.id+'">'+esc(ct.name)+' <span class="hint" style="display:inline">'+(ct.pct>0?'+':'')+ct.pct+'%</span></button>'}).join('')+'</div>';
+  h+='<div class="eyebrow">Ключ доступа к приложению</div>'+(x.key?'<div class="keybox"><code>'+esc(x.key)+'</code><button class="btn sm" data-act="copyKey">Копировать</button></div><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn sm" data-act="shareKey">Текст для клиента</button><button class="btn sm" data-act="newKey">Выдать новый</button></div><p class="hint">Ключ привязан к категории «'+esc(catOf(x).name)+'»: по нему клиент увидит свои цены. Новый ключ отменяет старый.</p>':'<button class="btn dark wide" data-act="newKey">Сгенерировать ключ</button><p class="hint">Ключ передаётся клиенту, по нему он входит в приложение и видит цены своей категории.</p>');
+  h+='<div class="err" id="cerr" hidden></div><button class="btn main wide" data-act="saveClient">'+(isNew?'Сохранить клиента':'Сохранить изменения')+'</button>';
+  if(!isNew)h+='<button class="btn wide" data-act="orderFor">Новая заявка для клиента</button>';
+  return h;
+}
+function catSheet(){
+  var ct=SH.data,isNew=!SH.id,sample=['Докторская колбаса','Сосиски Молочные','Балычок Бонито в/к','Ушки классические','Пельмени Элитные','Колбаски Мюнхенские'].map(function(n){return P.filter(function(p){return p.name===n})[0]}).filter(Boolean);
+  var groups=CATS.slice(1);
+  var h='<div class="hd"><div><div class="eyebrow">Ценовая категория</div><h2>'+(isNew?'Новая категория':esc(ct.name))+'</h2></div><button class="x" data-close="1" aria-label="Закрыть">✕</button></div>';
+  h+='<div class="card grid2"><label class="f full">Название *<input class="in" data-c="name" value="'+esc(ct.name)+'" placeholder="Например, Опт крупный"></label><label class="f">Скидка / наценка, %<small>−5 = скидка 5%</small><input class="in" data-c="pct" inputmode="decimal" value="'+esc(ct.pct)+'"></label><label class="f">Для кого<input class="in" data-c="note" value="'+esc(ct.note||'')+'" placeholder="условия"></label></div>';
+  h+='<div class="eyebrow">Свой процент для групп товаров</div><div class="card grid2">'+groups.map(function(g){var v=ct.over&&ct.over[g]!=null?ct.over[g]:'';return '<label class="f" style="font-size:10px">'+esc(g)+'<input class="in" data-ov="'+esc(g)+'" inputmode="decimal" value="'+esc(v)+'" placeholder="как общий"></label>'}).join('')+'</div>';
+  h+='<div class="eyebrow">Как выйдут цены</div><div class="card"><table class="prices"><tbody>'+sample.map(function(p){var b=unitPrice(p,{pct:0,over:{}}),n=unitPrice(p,ct);return '<tr><td>'+esc(p.name)+'<div class="hint">'+esc(p.pk)+'</div></td><td class="r num"><span class="hint">'+rub(b)+'</span><br><b>'+rub(n)+'</b></td></tr>'}).join('')+'</tbody></table></div>';
+  h+='<div class="err" id="cterr" hidden></div><button class="btn main wide" data-act="saveCat">Сохранить категорию</button>';
+  return h;
+}
+
+/* ---------- events ---------- */
+document.addEventListener('click',function(e){
+  var t=e.target;
+  if(t.dataset&&t.dataset.scrim){closeSheet();return}
+  var b=t.closest('button');if(!b)return;var d=b.dataset;
+  if(d.tab){if(d.tab==='cart'&&!M.client)d.tab='order';go(d.tab);return}
+  if(d.close){closeSheet();return}
+  if(d.client){M.client=d.client;M.cart=[];M.comment='';render();window.scrollTo(0,0);return}
+  if(d.date){M.date=d.date;render();return}
+  if(d.cat!=null&&!d.cated){M.cat=d.cat;render();return}
+  if(d.prod){var p=BY[d.prod],def={};optionsFor(p).forEach(function(o){def[o.k]=o.v[0]});SH={type:'prod',id:p.id,q:1,opt:def,note:''};sheet(productSheet());return}
+  if(d.edit!=null){var l=M.cart[+d.edit];SH={type:'prod',id:l.id,q:l.q,opt:Object.assign({},l.opt),note:l.note,edit:+d.edit};sheet(productSheet());return}
+  if(d.opt&&SH){SH.opt[d.opt]=d.val;sheet(productSheet());return}
+  if(d.sq&&SH){SH.q=Math.max(1,Math.min(999,SH.q+(+d.sq)));sheet(productSheet());return}
+  if(d.inc!=null){M.cart[+d.inc].q++;render();return}
+  if(d.dec!=null){var li=M.cart[+d.dec];li.q--;if(li.q<1)M.cart.splice(+d.dec,1);render();return}
+  if(d.card){var x=client(d.card);SH={type:'client',id:x.id,data:Object.assign({},x)};sheet(clientSheet());return}
+  if(d.setcat&&SH){collectClient();SH.data.cat=d.setcat;sheet(clientSheet());return}
+  if(d.cated){var ct=S.cats.filter(function(c){return c.id===d.cated})[0];SH={type:'cat',id:ct.id,data:JSON.parse(JSON.stringify(ct))};sheet(catSheet());return}
+  if(d.copyo){var o=S.orders.filter(function(x){return x.num===+d.copyo})[0],c=client(o.client);copy('Заявка № '+o.num+' · '+c.name+' · '+dayLabel(o.date)+'\n'+o.lines.map(function(l){var p=BY[l.id],ot=optText(l);return '• '+p.name+' — '+l.q+' '+p.unit+(ot.length?' ('+ot.join(', ')+')':'')}).join('\n')+(o.comment?'\nКомментарий: '+o.comment:''),'Заявка скопирована');return}
+  if(d.repeato){var o2=S.orders.filter(function(x){return x.num===+d.repeato})[0];M.client=o2.client;M.cart=JSON.parse(JSON.stringify(o2.lines));M.comment=o2.comment||'';go('cart');toast('Состав заявки № '+o2.num+' в корзине');return}
+  var a=d.act;if(!a)return;
+  if(a==='changeClient'){if(M.cart.length&&!M.confirmChange){M.confirmChange=true;toast('Корзина очистится. Нажмите ещё раз, чтобы сменить клиента');setTimeout(function(){M.confirmChange=false},3000);return}M.client=null;M.cart=[];M.confirmChange=false;render()}
+  if(a==='repeat'){var last=S.orders.filter(function(o){return o.client===M.client}).sort(function(x,y){return y.num-x.num})[0];if(last){M.cart=JSON.parse(JSON.stringify(last.lines));go('cart');toast('Прошлая заявка в корзине')}}
+  if(a==='addLine'&&SH){SH.note=($('lnote')||{}).value||'';var line={id:SH.id,q:SH.q,opt:SH.opt,note:SH.note.trim()};
+    if(SH.edit!=null)M.cart[SH.edit]=line;else{var same=M.cart.filter(function(x){return x.id===line.id&&JSON.stringify(x.opt)===JSON.stringify(line.opt)&&x.note===line.note})[0];if(same)same.q+=line.q;else M.cart.push(line)}
+    var nm=BY[SH.id].name;closeSheet();render();toast(nm+': в корзине')}
+  if(a==='delLine'&&SH){M.cart.splice(SH.edit,1);closeSheet();render()}
+  if(a==='place'){M.comment=($('ocomment')||{}).value||M.comment;var c2=client(M.client),o3={num:S.num++,client:M.client,date:M.date,lines:M.cart,comment:M.comment.trim(),sum:cartSum(),kg:cartKg(),cat:catOf(c2).id,by:S.me||'',created:Date.now(),status:0};
+    S.orders.push(o3);save();M.cart=[];M.comment='';M.client=null;go('orders');toast('Заявка № '+o3.num+' оформлена')}
+  if(a==='newClient'){SH={type:'client',id:null,data:{cat:'base',type:'магазин',pay:'отсрочка 7 дней',docs:'ЭДО',days:'пн–сб'}};sheet(clientSheet())}
+  if(a==='newKey'&&SH){collectClient();SH.data.key=newKey();sheet(clientSheet());toast('Ключ создан — не забудьте сохранить карту')}
+  if(a==='copyKey'&&SH)copy(SH.data.key,'Ключ скопирован');
+  if(a==='shareKey'&&SH){var ct2=catOf(SH.data);copy('Здравствуйте! Это «Фермерофф». Заказы теперь можно оформлять в приложении: '+location.href.replace(/[^/]*$/,'')+'\nВаш ключ доступа: '+SH.data.key+'\nЦены — по вашей категории «'+ct2.name+'». Заказ на завтра — до '+CUTOFF+':00.','Текст с ключом скопирован — отправьте клиенту')}
+  if(a==='saveClient'&&SH){collectClient();var x2=SH.data,miss=QFIELDS.filter(function(f){return f[3]&&!String(x2[f[0]]||'').trim()}).map(function(f){return f[1]});
+    if(miss.length){var er=$('cerr');er.textContent='Заполните: '+miss.join(', ');er.hidden=false;return}
+    if(SH.id){var cc=client(SH.id);Object.assign(cc,x2)}else{x2.id='k'+(Date.now()%1e7);x2.created=Date.now();S.clients.unshift(x2)}save();var wasNew=!SH.id,nid=x2.id;closeSheet();render();toast(wasNew?'Клиент добавлен'+(x2.key?'':' — выдайте ему ключ'):'Карта сохранена');if(wasNew&&M.tab==='order'){M.client=nid;render()}}
+  if(a==='orderFor'&&SH){var id=SH.id;closeSheet();M.client=id;M.cart=[];go('order')}
+  if(a==='newCat'){SH={type:'cat',id:null,data:{name:'',pct:0,over:{},note:''}};sheet(catSheet())}
+  if(a==='saveCat'&&SH){collectCat();var c3=SH.data;if(!String(c3.name).trim()){var e3=$('cterr');e3.textContent='Введите название категории';e3.hidden=false;return}
+    if(SH.id){var i=S.cats.findIndex(function(z){return z.id===SH.id});S.cats[i]=c3}else{c3.id='c'+Date.now();S.cats.push(c3)}save();closeSheet();render();toast('Категория «'+c3.name+'» сохранена')}
+});
+function collectClient(){document.querySelectorAll('[data-q]').forEach(function(i){SH.data[i.dataset.q]=i.value})}
+function collectCat(){document.querySelectorAll('[data-c]').forEach(function(i){SH.data[i.dataset.c]=i.dataset.c==='pct'?(parseFloat(String(i.value).replace(',','.'))||0):i.value});SH.data.over={};document.querySelectorAll('[data-ov]').forEach(function(i){var v=String(i.value).trim();if(v!=='')SH.data.over[i.dataset.ov]=parseFloat(v.replace(',','.'))||0})}
+document.addEventListener('input',function(e){var t=e.target;
+  if(t.id==='pq'){M.q=t.value;keep(t)}if(t.id==='cq'){M.cq=t.value;keep(t)}if(t.id==='kq'){M.kq=t.value;keep(t)}if(t.id==='ocomment')M.comment=t.value;
+  if(SH&&SH.type==='cat'&&(t.dataset.c==='pct'||t.dataset.ov!=null)){collectCat();var st=document.querySelector('.sheet').scrollTop,id=t.dataset.c?'[data-c="pct"]':'[data-ov="'+t.dataset.ov+'"]',pos=t.selectionStart;sheet(catSheet());var n=document.querySelector(id),sh=document.querySelector('.sheet');sh.scrollTop=st;if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(_){}}}
+});
+function keep(t){var id=t.id,pos=t.selectionStart;render();var n=$(id);if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(_){}}}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&SH)closeSheet()});
+
+/* ---------- gate ---------- */
+function enter(){$('gate').hidden=true;$('app').hidden=false;$('tabs').hidden=false;load();$('who').textContent=S.me||'—';render()}
+$('gateForm').addEventListener('submit',function(e){e.preventDefault();var k=$('mkey').value.trim(),er=$('gerr'),btn=this.querySelector('button[type=submit]');
+  if(k.length<4){er.textContent='Введите ключ менеджера.';er.hidden=false;return}
+  btn.disabled=true;btn.textContent='Проверяем…';
+  unlock(k).then(function(){try{localStorage.setItem(KEYLS,k.toUpperCase())}catch(_){}load();S.me=$('mname').value.trim()||S.me||'Менеджер';save();enter()},function(){er.textContent='Ключ не подошёл.';er.hidden=false}).then(function(){btn.disabled=false;btn.textContent='Войти'});
+});
+var saved=null;try{saved=localStorage.getItem(KEYLS)}catch(_){}
+if(saved)unlock(saved).then(enter,function(){try{localStorage.removeItem(KEYLS)}catch(_){}});
+})();
+</script>
+
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}</script>
+</body>
+</html>
