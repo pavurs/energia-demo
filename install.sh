@@ -164,11 +164,12 @@ IP=$(curl -fsS --max-time 5 https://api.ipify.org 2>/dev/null || hostname -I | a
 say "Готово"
 cat <<EOT
 Приложения (заработают, когда домен будет указывать на этот сервер — $IP):
-  Клиенты:   https://$DOMAIN
+  Сайт:      https://$DOMAIN
+  Клиенты:   https://zakaz.$DOMAIN
   Офис:      https://office.$DOMAIN
   Менеджер:  https://manager.$DOMAIN
 
-В настройках домена нужны A-записи на $IP:  @   www   office   manager
+В настройках домена нужны A-записи на $IP:  @   www   zakaz   office   manager
 Сертификаты HTTPS Caddy получит сам в течение пары минут после этого.
 
 Ключи офиса и менеджера выведены выше и сохранены в $KEYS (только для root).
